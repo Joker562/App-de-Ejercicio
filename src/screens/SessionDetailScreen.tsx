@@ -12,6 +12,7 @@ import { confirmAction } from '../utils/dialogs';
 import { formatDate, formatDuration, kgToUnit } from '../utils/format';
 import { isWorkingSet } from '../utils/progression';
 import { PASS_SCORE, findProgram, sessionPoints } from '../utils/military';
+import { describeRecord } from '../utils/records';
 import { completedSetCount, sessionVolumeKg } from '../utils/stats';
 
 /** Detalle de una sesión terminada. Borrar está aquí, tras confirmar. */
@@ -99,6 +100,26 @@ export function SessionDetailScreen({ navigation, route }: HistoryScreenProps<'S
         </Card>
       ) : null}
 
+      {session.records?.length ? (
+        <Card style={{ borderColor: theme.accent }}>
+          <View style={styles.recordHeader}>
+            <Ionicons name="trophy" size={20} color={theme.accent} />
+            <Text style={[styles.recordHeaderText, { color: theme.accent }]}>
+              {session.records.length === 1 ? '¡Nuevo récord!' : `¡${session.records.length} nuevos récords!`}
+            </Text>
+          </View>
+          {session.records.map((record, i) => {
+            const { title, detail } = describeRecord(record, unit);
+            return (
+              <View key={i}>
+                <Text style={[styles.recordTitle, { color: theme.text }]}>{title}</Text>
+                <Text style={{ color: theme.textMuted, fontSize: 13 }}>{detail}</Text>
+              </View>
+            );
+          })}
+        </Card>
+      ) : null}
+
       {session.mode === 'military' ? (
         <Text style={[styles.points, { color: theme.accent }]}>
           +{sessionPoints(session)} puntos de rango
@@ -131,6 +152,18 @@ export function SessionDetailScreen({ navigation, route }: HistoryScreenProps<'S
                 accessibilityLabel={`Ver cómo se hace ${exercise.name}`}
               >
                 <Ionicons name="information-circle-outline" size={22} color={theme.accent} />
+              </Pressable>
+            ) : null}
+            {exercise.exerciseId ? (
+              <Pressable
+                onPress={() =>
+                  navigation.navigate('ExerciseProgress', { exerciseId: exercise.exerciseId! })
+                }
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel={`Ver progreso de ${exercise.name}`}
+              >
+                <Ionicons name="trending-up" size={22} color={theme.accent} />
               </Pressable>
             ) : null}
           </View>
@@ -187,6 +220,9 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: '800' },
   date: { fontSize: 14, marginTop: 2 },
   stats: { flexDirection: 'row' },
+  recordHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  recordHeaderText: { fontSize: 18, fontWeight: '800' },
+  recordTitle: { fontSize: 14, fontWeight: '700' },
   testTotal: { fontSize: 32, fontWeight: '800', textAlign: 'center' },
   testVerdict: { fontSize: 14, fontWeight: '800', textAlign: 'center' },
   testRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },

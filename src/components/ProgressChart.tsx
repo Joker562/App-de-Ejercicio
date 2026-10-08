@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Line, Rect, Text as SvgText } from 'react-native-svg';
 
@@ -9,6 +8,9 @@ export interface ChartPoint {
   value: number;
 }
 
+// Coordenadas internas del SVG: se escala al ancho disponible con viewBox,
+// así no hace falta medir el contenedor (onLayout) antes de dibujar.
+const WIDTH = 340;
 const HEIGHT = 180;
 const LABEL_SPACE = 20;
 const VALUE_SPACE = 16;
@@ -22,7 +24,6 @@ export function ProgressChart({
   formatValue?: (value: number) => string;
 }) {
   const theme = useTheme();
-  const [width, setWidth] = useState(0);
 
   if (data.length === 0) {
     return (
@@ -34,72 +35,71 @@ export function ProgressChart({
 
   const max = Math.max(...data.map((d) => d.value), 1);
   const plotHeight = HEIGHT - LABEL_SPACE - VALUE_SPACE;
-  const slot = width / data.length;
+  const slot = WIDTH / data.length;
   const barWidth = Math.min(32, slot * 0.6);
 
   return (
-    <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
-      {width > 0 ? (
-        <Svg width={width} height={HEIGHT}>
-          <Line
-            x1={0}
-            x2={width}
-            y1={HEIGHT - LABEL_SPACE}
-            y2={HEIGHT - LABEL_SPACE}
-            stroke={theme.border}
-            strokeWidth={1}
-          />
-          {data.map((point, i) => {
-            const barHeight = (point.value / max) * plotHeight;
-            const x = i * slot + (slot - barWidth) / 2;
-            const y = HEIGHT - LABEL_SPACE - barHeight;
-            const isLast = i === data.length - 1;
-            return (
-              <Rect
-                key={`bar-${i}`}
-                x={x}
-                y={y}
-                width={barWidth}
-                height={Math.max(barHeight, 1)}
-                rx={4}
-                fill={isLast ? theme.primary : theme.surfaceAlt}
-                stroke={theme.primary}
-                strokeWidth={isLast ? 0 : 1}
-              />
-            );
-          })}
-          {data.map((point, i) => {
-            const cx = i * slot + slot / 2;
-            const y = HEIGHT - LABEL_SPACE - (point.value / max) * plotHeight;
-            return [
-              <SvgText
-                key={`value-${i}`}
-                x={cx}
-                y={y - 4}
-                fontSize={10}
-                fill={theme.textMuted}
-                textAnchor="middle"
-              >
-                {formatValue(point.value)}
-              </SvgText>,
-              <SvgText
-                key={`label-${i}`}
-                x={cx}
-                y={HEIGHT - 6}
-                fontSize={10}
-                fill={theme.textMuted}
-                textAnchor="middle"
-              >
-                {point.label}
-              </SvgText>,
-            ];
-          })}
-        </Svg>
-      ) : null}
+    <View style={styles.canvas}>
+      <Svg width="100%" height="100%" viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
+        <Line
+          x1={0}
+          x2={WIDTH}
+          y1={HEIGHT - LABEL_SPACE}
+          y2={HEIGHT - LABEL_SPACE}
+          stroke={theme.border}
+          strokeWidth={1}
+        />
+        {data.map((point, i) => {
+          const barHeight = (point.value / max) * plotHeight;
+          const x = i * slot + (slot - barWidth) / 2;
+          const y = HEIGHT - LABEL_SPACE - barHeight;
+          const isLast = i === data.length - 1;
+          return (
+            <Rect
+              key={`bar-${i}`}
+              x={x}
+              y={y}
+              width={barWidth}
+              height={Math.max(barHeight, 1)}
+              rx={4}
+              fill={isLast ? theme.primary : theme.surfaceAlt}
+              stroke={theme.primary}
+              strokeWidth={isLast ? 0 : 1}
+            />
+          );
+        })}
+        {data.map((point, i) => {
+          const cx = i * slot + slot / 2;
+          const y = HEIGHT - LABEL_SPACE - (point.value / max) * plotHeight;
+          return [
+            <SvgText
+              key={`value-${i}`}
+              x={cx}
+              y={y - 4}
+              fontSize={10}
+              fill={theme.textMuted}
+              textAnchor="middle"
+            >
+              {formatValue(point.value)}
+            </SvgText>,
+            <SvgText
+              key={`label-${i}`}
+              x={cx}
+              y={HEIGHT - 6}
+              fontSize={10}
+              fill={theme.textMuted}
+              textAnchor="middle"
+            >
+              {point.label}
+            </SvgText>,
+          ];
+        })}
+      </Svg>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   empty: { textAlign: 'center', paddingVertical: 24 },
+  canvas: { width: '100%', aspectRatio: WIDTH / HEIGHT },
 });

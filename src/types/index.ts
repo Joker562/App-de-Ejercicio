@@ -220,4 +220,31 @@ export interface Session {
   roundsCompleted: number;
   exercises: WorkoutExercise[];
   fitnessTest?: FitnessTestResult;
+  /** Récords batidos en esta sesión (se calculan al guardarla). */
+  records?: RecordBreak[];
+}
+
+export type RecordKind = 'weight' | 'e1rm' | 'reps' | 'rounds' | 'time' | 'score';
+
+/** Un récord personal batido, con el valor nuevo y el anterior. */
+export interface RecordBreak {
+  kind: RecordKind;
+  /** Ejercicio o programa al que pertenece. */
+  subject: string;
+  exerciseId?: string;
+  /** Valores numéricos en unidades base (kg, reps, rondas, segundos, puntos). */
+  value: number;
+  previous: number;
+}
+
+/** Registro de peso corporal y medidas (cm). */
+export interface BodyEntry {
+  id: string;
+  date: number;
+  weightKg?: number;
+  bodyFatPct?: number;
+  waistCm?: number;
+  chestCm?: number;
+  armCm?: number;
+  thighCm?: number;
 }

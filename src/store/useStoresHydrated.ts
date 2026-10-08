@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 
 import { useAppStore } from './useAppStore';
+import { useBodyStore } from './useBodyStore';
 import { useHistoryStore } from './useHistoryStore';
 import { useRoutineStore } from './useRoutineStore';
 import { useWorkoutStore } from './useWorkoutStore';
 
-const STORES = [useAppStore, useHistoryStore, useRoutineStore, useWorkoutStore];
+const STORES = [useAppStore, useBodyStore, useHistoryStore, useRoutineStore, useWorkoutStore];
 
 const allHydrated = () => STORES.every((store) => store.persist.hasHydrated());
 

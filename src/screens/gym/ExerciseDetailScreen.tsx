@@ -13,13 +13,17 @@ import {
 } from '../../data/exercises';
 import type { DashboardScreenProps } from '../../navigation/types';
 import { usePickExercise } from '../../navigation/usePickExercise';
+import { useHistoryStore } from '../../store/useHistoryStore';
 import { useTheme } from '../../theme/useTheme';
+import { exerciseHistory } from '../../utils/records';
 
-export function ExerciseDetailScreen({ route }: DashboardScreenProps<'ExerciseDetail'>) {
+export function ExerciseDetailScreen({ navigation, route }: DashboardScreenProps<'ExerciseDetail'>) {
   const theme = useTheme();
   const exercise = findExercise(route.params.exerciseId);
   const pickFor = route.params.pickFor;
   const pick = usePickExercise(pickFor);
+  const sessions = useHistoryStore((s) => s.sessions);
+  const timesDone = exerciseHistory(sessions, route.params.exerciseId).length;
 
   if (!exercise) {
     return (
@@ -80,6 +84,20 @@ export function ExerciseDetailScreen({ route }: DashboardScreenProps<'ExerciseDe
         <Button
           title={pickFor === 'workout' ? 'Añadir a la sesión' : 'Añadir a la rutina'}
           onPress={() => pick(exercise.id)}
+        />
+      ) : null}
+
+      {timesDone > 0 && !pick ? (
+        <Button
+          title={`Ver tu progreso (${timesDone} ${timesDone === 1 ? 'sesión' : 'sesiones'})`}
+          variant="secondary"
+          onPress={() =>
+            navigation.navigate('Historial', {
+              screen: 'ExerciseProgress',
+              params: { exerciseId: exercise.id },
+              initial: false,
+            })
+          }
         />
       ) : null}
 

@@ -17,6 +17,13 @@ Aplicación de fitness con dos modos:
 
 Cada modo tiene su paleta: verde oliva/negro para militar y azul/gris oscuro para gimnasio.
 
+**Progreso e historial** (ambos modos):
+- Mapa de calor de actividad de las últimas 15 semanas; tocar un día muestra sus sesiones.
+- Detalle de cada sesión y gráfico por ejercicio (1RM estimado y peso máximo, o repeticiones máximas).
+- Récords personales detectados al guardar cada sesión (peso, 1RM, reps, rondas, tiempo, nota), con aviso de voz.
+- Series semanales por grupo muscular, con el rango orientativo de 10-20 series en gimnasio.
+- Peso corporal, % de grasa y medidas con su evolución (Perfil > Peso y medidas).
+
 ## Catálogo de ejercicios
 
 876 ejercicios de [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (dominio público), con nombres traducidos al español, búsqueda en español o inglés y filtros por grupo muscular, equipo y tipo. Están separados por modo: 256 de calistenia militar (peso corporal, barra y paralelas, saltos, estiramientos) y 620 de gimnasio (barras, mancuernas, poleas, máquinas, kettlebells...). El reparto se decide en `scripts/build-exercises.mjs`. Cada ejercicio muestra una animación que alterna la foto de la posición inicial y la final, músculos trabajados e instrucciones (en inglés).

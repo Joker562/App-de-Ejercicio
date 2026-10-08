@@ -1,14 +1,17 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 import { LevelCard } from '../components/LevelCard';
-import { Button, Card, Screen, SectionTitle } from '../components/ui';
+import { Button, Card, ListItem, Screen, SectionTitle } from '../components/ui';
 import { MILITARY_LEVELS } from '../data/data';
+import type { ProfileScreenProps } from '../navigation/types';
 import { useAppStore } from '../store/useAppStore';
+import { useBodyStore } from '../store/useBodyStore';
 import { useHistoryStore } from '../store/useHistoryStore';
 import { useTheme } from '../theme/useTheme';
 import type { Sex, WeightUnit } from '../types';
 import { confirmAction } from '../utils/dialogs';
-import { formatDuration } from '../utils/format';
+import { formatDuration, kgToUnit } from '../utils/format';
 import { rankProgress } from '../utils/military';
 import { computeStreak } from '../utils/stats';
 
@@ -19,7 +22,7 @@ const SEX_OPTIONS: { value: Sex; label: string }[] = [
   { value: 'female', label: 'Mujer' },
 ];
 
-export function ProfileScreen() {
+export function ProfileScreen({ navigation }: ProfileScreenProps<'Profile'>) {
   const theme = useTheme();
   const unit = useAppStore((s) => s.unit);
   const setUnit = useAppStore((s) => s.setUnit);
@@ -33,6 +36,8 @@ export function ProfileScreen() {
   const sex = useAppStore((s) => s.sex);
   const setProfile = useAppStore((s) => s.setProfile);
   const sessions = useHistoryStore((s) => s.sessions);
+  const bodyEntries = useBodyStore((s) => s.entries);
+  const lastWeight = bodyEntries.find((e) => e.weightKg !== undefined)?.weightKg;
   const clearHistory = useHistoryStore((s) => s.clearHistory);
 
   const { current, points } = rankProgress(sessions);
@@ -64,6 +69,17 @@ export function ProfileScreen() {
           </View>
         ))}
       </Card>
+
+      <ListItem
+        title="Peso y medidas"
+        subtitle={
+          lastWeight !== undefined
+            ? `Último peso: ${kgToUnit(lastWeight, unit)} ${unit} · ${bodyEntries.length} registros`
+            : 'Registra tu peso, % de grasa y medidas'
+        }
+        onPress={() => navigation.navigate('BodyMetrics')}
+        right={<Ionicons name="chevron-forward" size={18} color={theme.textMuted} />}
+      />
 
       <SectionTitle>Rangos</SectionTitle>
       <Card>

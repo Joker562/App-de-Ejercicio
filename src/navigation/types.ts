@@ -40,13 +40,24 @@ export type DashboardStackParamList = {
 export type HistoryStackParamList = {
   History: undefined;
   SessionDetail: { sessionId: string };
+  ExerciseProgress: { exerciseId: string };
+};
+
+export type ProfileStackParamList = {
+  Profile: undefined;
+  BodyMetrics: undefined;
 };
 
 export type RootTabParamList = {
   Inicio: NavigatorScreenParams<DashboardStackParamList>;
   Historial: NavigatorScreenParams<HistoryStackParamList>;
-  Perfil: undefined;
+  Perfil: NavigatorScreenParams<ProfileStackParamList>;
 };
+
+export type ProfileScreenProps<T extends keyof ProfileStackParamList> = CompositeScreenProps<
+  NativeStackScreenProps<ProfileStackParamList, T>,
+  BottomTabScreenProps<RootTabParamList>
+>;
 
 export type HistoryScreenProps<T extends keyof HistoryStackParamList> = CompositeScreenProps<
   NativeStackScreenProps<HistoryStackParamList, T>,

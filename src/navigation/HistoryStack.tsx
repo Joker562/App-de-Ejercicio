@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { ExerciseProgressScreen } from '../screens/ExerciseProgressScreen';
 import { HistoryScreen } from '../screens/HistoryScreen';
 import { SessionDetailScreen } from '../screens/SessionDetailScreen';
 import { useTheme } from '../theme/useTheme';
@@ -23,6 +24,11 @@ export function HistoryStack() {
         name="SessionDetail"
         component={SessionDetailScreen}
         options={{ title: 'Sesión' }}
+      />
+      <Stack.Screen
+        name="ExerciseProgress"
+        component={ExerciseProgressScreen}
+        options={{ title: 'Progreso' }}
       />
     </Stack.Navigator>
   );

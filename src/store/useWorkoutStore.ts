@@ -24,7 +24,9 @@ import { createId } from '../utils/format';
 import { pendingAlerts } from '../utils/intervals';
 import { cancelAlerts, scheduleAlerts } from '../utils/notifications';
 import { isWorkingSet, lastPerformance } from '../utils/progression';
+import { detectRecords } from '../utils/records';
 import { isLinkedWithNext, normalizeSupersets, toggleLinkWithNext } from '../utils/supersets';
+import { speak } from '../utils/voice';
 import { useAppStore } from './useAppStore';
 import { useHistoryStore } from './useHistoryStore';
 import { STORAGE_VERSION, persistStorage } from './storage';
@@ -37,6 +39,17 @@ function scheduleRestAlert(endsAt: number) {
       body: '¡A por la siguiente serie!',
     },
   ]);
+}
+
+/** Guarda la sesión con los récords que bate y los anuncia. */
+function saveSession(session: Session) {
+  const history = useHistoryStore.getState();
+  const records = detectRecords(session, history.sessions);
+  if (records.length > 0) {
+    session.records = records;
+    speak(records.length === 1 ? '¡Nuevo récord!' : `¡${records.length} nuevos récords!`);
+  }
+  history.addSession(session);
 }
 
 function cancelWorkoutAlerts() {
@@ -214,7 +227,7 @@ export const useWorkoutStore = create<WorkoutState>()(
             ],
             fitnessTest: result,
           };
-          useHistoryStore.getState().addSession(session);
+          saveSession(session);
           return session;
         },
 
@@ -415,7 +428,7 @@ export const useWorkoutStore = create<WorkoutState>()(
             roundsCompleted: active.roundsCompleted,
             exercises: active.exercises,
           };
-          useHistoryStore.getState().addSession(session);
+          saveSession(session);
           set({ active: null, rest: null, clock: IDLE_CLOCK });
           cancelWorkoutAlerts();
           return session;

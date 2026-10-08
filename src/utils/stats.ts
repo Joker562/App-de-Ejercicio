@@ -1,5 +1,4 @@
 import type { Session, TrainingMode } from '../types';
-import { estimateOneRepMax } from './oneRepMax';
 import { isWorkingSet } from './progression';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -82,44 +81,4 @@ export function weeklySummary(
     completedSets: thisWeek.reduce((sum, s) => sum + completedSetCount(s), 0),
     activeDays,
   };
-}
-
-export interface ExerciseRecord {
-  exerciseId: string;
-  name: string;
-  bestOneRepMaxKg: number;
-  maxWeightKg: number;
-}
-
-/** Mejor 1RM estimado y peso máximo por ejercicio de gimnasio. */
-export function exerciseRecords(sessions: Session[]): ExerciseRecord[] {
-  const records = new Map<string, ExerciseRecord>();
-  sessions
-    .filter((s) => s.mode === 'gym')
-    .forEach((session) =>
-      session.exercises.forEach((ex) => {
-        if (!ex.exerciseId) return;
-        ex.sets
-          .filter((set) => set.completed && isWorkingSet(set))
-          .forEach((set) => {
-            const prev = records.get(ex.exerciseId!) ?? {
-              exerciseId: ex.exerciseId!,
-              name: ex.name,
-              bestOneRepMaxKg: 0,
-              maxWeightKg: 0,
-            };
-            records.set(ex.exerciseId!, {
-              ...prev,
-              bestOneRepMaxKg: Math.max(
-                prev.bestOneRepMaxKg,
-                estimateOneRepMax(set.weightKg, set.reps),
-              ),
-              maxWeightKg: Math.max(prev.maxWeightKg, set.weightKg),
-            });
-          });
-      }),
-    );
-  return [...records.values()].sort(
-    (a, b) => b.bestOneRepMaxKg - a.bestOneRepMaxKg,
-  );
 }
