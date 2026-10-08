@@ -1,4 +1,4 @@
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { LevelCard } from '../components/LevelCard';
 import { Button, Card, Screen, SectionTitle } from '../components/ui';
@@ -7,6 +7,7 @@ import { useAppStore } from '../store/useAppStore';
 import { useHistoryStore } from '../store/useHistoryStore';
 import { useTheme } from '../theme/useTheme';
 import type { WeightUnit } from '../types';
+import { confirmAction } from '../utils/dialogs';
 import { formatDuration } from '../utils/format';
 import { computeStreak, militaryLevelProgress } from '../utils/stats';
 
@@ -28,10 +29,13 @@ export function ProfileScreen() {
   ];
 
   const confirmClear = () =>
-    Alert.alert('Borrar historial', 'Se eliminarán todas las sesiones y tu rango volverá a Recluta.', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Borrar todo', style: 'destructive', onPress: clearHistory },
-    ]);
+    confirmAction({
+      title: 'Borrar historial',
+      message: 'Se eliminarán todas las sesiones y tu rango volverá a Recluta.',
+      confirmText: 'Borrar todo',
+      destructive: true,
+      onConfirm: clearHistory,
+    });
 
   return (
     <Screen>

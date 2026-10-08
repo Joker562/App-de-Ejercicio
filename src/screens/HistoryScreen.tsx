@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { ProgressChart } from '../components/ProgressChart';
 import { Card, ListItem, Screen, SectionTitle } from '../components/ui';
@@ -7,6 +7,7 @@ import { useHistoryStore } from '../store/useHistoryStore';
 import { MODE_LABELS } from '../theme/palettes';
 import { useTheme } from '../theme/useTheme';
 import type { Session } from '../types';
+import { confirmAction } from '../utils/dialogs';
 import { formatDate, formatDuration, kgToUnit } from '../utils/format';
 import { completedSetCount, exerciseRecords, sessionVolumeKg } from '../utils/stats';
 
@@ -44,10 +45,13 @@ export function HistoryScreen() {
   };
 
   const confirmDelete = (s: Session) =>
-    Alert.alert('Eliminar sesión', `¿Eliminar "${s.title}" del historial?`, [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Eliminar', style: 'destructive', onPress: () => removeSession(s.id) },
-    ]);
+    confirmAction({
+      title: 'Eliminar sesión',
+      message: `¿Eliminar "${s.title}" del historial?`,
+      confirmText: 'Eliminar',
+      destructive: true,
+      onConfirm: () => removeSession(s.id),
+    });
 
   return (
     <Screen>

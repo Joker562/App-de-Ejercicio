@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 import { Button, Card, Screen } from '../../components/ui';
 import { MILITARY_LEVELS, MILITARY_PROGRAMS } from '../../data/data';
@@ -6,6 +6,7 @@ import type { DashboardScreenProps } from '../../navigation/types';
 import { useWorkoutStore } from '../../store/useWorkoutStore';
 import { useTheme } from '../../theme/useTheme';
 import type { MilitaryProgram } from '../../types';
+import { confirmAction } from '../../utils/dialogs';
 import { describeTimer } from '../../utils/intervals';
 
 export function ProgramListScreen({ navigation }: DashboardScreenProps<'ProgramList'>) {
@@ -19,14 +20,13 @@ export function ProgramListScreen({ navigation }: DashboardScreenProps<'ProgramL
       navigation.navigate('ActiveWorkout');
     };
     if (!active) return go();
-    Alert.alert(
-      'Entrenamiento en curso',
-      `Se descartará "${active.title}". ¿Empezar "${program.name}"?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Empezar', style: 'destructive', onPress: go },
-      ],
-    );
+    confirmAction({
+      title: 'Entrenamiento en curso',
+      message: `Se descartará "${active.title}". ¿Empezar "${program.name}"?`,
+      confirmText: 'Empezar',
+      destructive: true,
+      onConfirm: go,
+    });
   };
 
   return (

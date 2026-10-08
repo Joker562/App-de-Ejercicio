@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Button, Card, Screen } from '../../components/ui';
 import { findExercise } from '../../data/data';
@@ -7,6 +7,7 @@ import { useRoutineStore } from '../../store/useRoutineStore';
 import { useWorkoutStore } from '../../store/useWorkoutStore';
 import { useTheme } from '../../theme/useTheme';
 import type { GymRoutine } from '../../types';
+import { confirmAction } from '../../utils/dialogs';
 
 export function RoutineListScreen({ navigation }: DashboardScreenProps<'RoutineList'>) {
   const theme = useTheme();
@@ -21,21 +22,23 @@ export function RoutineListScreen({ navigation }: DashboardScreenProps<'RoutineL
       navigation.navigate('ActiveWorkout');
     };
     if (!active) return go();
-    Alert.alert(
-      'Entrenamiento en curso',
-      `Se descartará "${active.title}". ¿Empezar "${routine.name}"?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Empezar', style: 'destructive', onPress: go },
-      ],
-    );
+    confirmAction({
+      title: 'Entrenamiento en curso',
+      message: `Se descartará "${active.title}". ¿Empezar "${routine.name}"?`,
+      confirmText: 'Empezar',
+      destructive: true,
+      onConfirm: go,
+    });
   };
 
   const confirmDelete = (routine: GymRoutine) =>
-    Alert.alert('Eliminar rutina', `¿Eliminar "${routine.name}"?`, [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Eliminar', style: 'destructive', onPress: () => removeRoutine(routine.id) },
-    ]);
+    confirmAction({
+      title: 'Eliminar rutina',
+      message: `¿Eliminar "${routine.name}"?`,
+      confirmText: 'Eliminar',
+      destructive: true,
+      onConfirm: () => removeRoutine(routine.id),
+    });
 
   return (
     <Screen>

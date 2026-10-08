@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { IntervalTimer } from '../components/IntervalTimer';
 import { RestTimer } from '../components/RestTimer';
@@ -9,6 +9,7 @@ import type { DashboardScreenProps } from '../navigation/types';
 import { useWorkoutStore } from '../store/useWorkoutStore';
 import { useTheme } from '../theme/useTheme';
 import type { ClockControls } from '../utils/clock';
+import { confirmAction } from '../utils/dialogs';
 import { formatDuration } from '../utils/format';
 import { useNow } from '../utils/useNow';
 
@@ -60,24 +61,27 @@ export function ActiveWorkoutScreen({ navigation }: DashboardScreenProps<'Active
       navigation.navigate('Historial');
     };
     if (!nothingLogged) return doFinish();
-    Alert.alert('Sin registros', 'No has marcado ninguna serie. ¿Guardar igualmente?', [
-      { text: 'Seguir entrenando', style: 'cancel' },
-      { text: 'Guardar', onPress: doFinish },
-    ]);
+    confirmAction({
+      title: 'Sin registros',
+      message: 'No has marcado ninguna serie. ¿Guardar igualmente?',
+      confirmText: 'Guardar',
+      cancelText: 'Seguir entrenando',
+      onConfirm: doFinish,
+    });
   };
 
   const cancel = () =>
-    Alert.alert('Descartar entrenamiento', 'Se perderá todo lo registrado en esta sesión.', [
-      { text: 'Seguir entrenando', style: 'cancel' },
-      {
-        text: 'Descartar',
-        style: 'destructive',
-        onPress: () => {
-          cancelWorkout();
-          navigation.popToTop();
-        },
+    confirmAction({
+      title: 'Descartar entrenamiento',
+      message: 'Se perderá todo lo registrado en esta sesión.',
+      confirmText: 'Descartar',
+      cancelText: 'Seguir entrenando',
+      destructive: true,
+      onConfirm: () => {
+        cancelWorkout();
+        navigation.popToTop();
       },
-    ]);
+    });
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>

@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Button, Card, Screen, SectionTitle } from '../../components/ui';
 import { GYM_EXERCISES, MUSCLE_GROUPS, findExercise } from '../../data/data';
@@ -8,6 +8,7 @@ import type { DashboardScreenProps } from '../../navigation/types';
 import { useRoutineStore } from '../../store/useRoutineStore';
 import { useTheme } from '../../theme/useTheme';
 import type { MuscleGroup, RoutineExercise } from '../../types';
+import { notify } from '../../utils/dialogs';
 import { createId } from '../../utils/format';
 
 type NumericField = 'targetSets' | 'targetReps' | 'restSec';
@@ -53,10 +54,10 @@ export function RoutineBuilderScreen({
   const remove = (index: number) => setExercises((list) => list.filter((_, i) => i !== index));
 
   const save = () => {
-    if (!name.trim()) return Alert.alert('Falta el nombre', 'Ponle un nombre a la rutina.');
-    if (exercises.length === 0) return Alert.alert('Sin ejercicios', 'Añade al menos un ejercicio.');
+    if (!name.trim()) return notify('Falta el nombre', 'Ponle un nombre a la rutina.');
+    if (exercises.length === 0) return notify('Sin ejercicios', 'Añade al menos un ejercicio.');
     if (exercises.some((ex) => ex.targetSets < 1)) {
-      return Alert.alert('Series no válidas', 'Cada ejercicio necesita al menos 1 serie.');
+      return notify('Series no válidas', 'Cada ejercicio necesita al menos 1 serie.');
     }
     saveRoutine({ id: existing?.id ?? createId(), name: name.trim(), exercises });
     navigation.goBack();

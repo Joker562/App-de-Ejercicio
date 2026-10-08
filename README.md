@@ -28,6 +28,16 @@ npx expo start
 
 Escanea el QR con Expo Go o pulsa `a` para abrir el emulador Android.
 
+### En PC (navegador)
+
+```bash
+npx expo start --web
+```
+
+Abre http://localhost:8081. En Windows PowerShell, si aparece el error "la ejecución de scripts está deshabilitada", usa `npx.cmd` en lugar de `npx`.
+
+En web los diálogos de confirmación usan los del navegador y la vibración de los temporizadores no está disponible.
+
 ## Estructura
 
 ```
