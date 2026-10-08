@@ -12,15 +12,14 @@ import {
   findExercise,
 } from '../../data/exercises';
 import type { DashboardScreenProps } from '../../navigation/types';
+import { usePickExercise } from '../../navigation/usePickExercise';
 import { useTheme } from '../../theme/useTheme';
-import { createId } from '../../utils/format';
 
-export function ExerciseDetailScreen({
-  navigation,
-  route,
-}: DashboardScreenProps<'ExerciseDetail'>) {
+export function ExerciseDetailScreen({ route }: DashboardScreenProps<'ExerciseDetail'>) {
   const theme = useTheme();
   const exercise = findExercise(route.params.exerciseId);
+  const pickFor = route.params.pickFor;
+  const pick = usePickExercise(pickFor);
 
   if (!exercise) {
     return (
@@ -77,16 +76,10 @@ export function ExerciseDetailScreen({
         ) : null}
       </Card>
 
-      {route.params.pickForRoutine ? (
+      {pick ? (
         <Button
-          title="Añadir a la rutina"
-          onPress={() =>
-            navigation.popTo(
-              'RoutineBuilder',
-              { picked: { exerciseId: exercise.id, nonce: createId() } },
-              { merge: true },
-            )
-          }
+          title={pickFor === 'routine' ? 'Añadir a la rutina' : 'Añadir a la sesión'}
+          onPress={() => pick(exercise.id)}
         />
       ) : null}
 

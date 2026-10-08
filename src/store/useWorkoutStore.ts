@@ -2,11 +2,14 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import { findExercise } from '../data/data';
+import { resolveExerciseId } from '../data/exercises';
 import type {
   ActiveWorkout,
   GymRoutine,
   MilitaryProgram,
+  RoutineExercise,
   Session,
+  WorkoutExercise,
   WorkoutSet,
 } from '../types';
 import {
@@ -19,6 +22,11 @@ import {
 import { createId } from '../utils/format';
 import { pendingAlerts } from '../utils/intervals';
 import { cancelAlerts, scheduleAlerts } from '../utils/notifications';
+import { isWorkingSet, lastPerformance } from '../utils/progression';
+import { isLinkedWithNext, normalizeSupersets, toggleLinkWithNext } from '../utils/supersets';
+import { useAppStore } from './useAppStore';
+import { useHistoryStore } from './useHistoryStore';
+import { STORAGE_VERSION, persistStorage } from './storage';
 
 function scheduleRestAlert(endsAt: number) {
   scheduleAlerts('rest', [
@@ -34,9 +42,6 @@ function cancelWorkoutAlerts() {
   cancelAlerts('rest');
   cancelAlerts('workout-timer');
 }
-import { resolveExerciseId } from '../data/exercises';
-import { useHistoryStore } from './useHistoryStore';
-import { STORAGE_VERSION, persistStorage } from './storage';
 
 interface RestTimer {
   endsAt: number;
@@ -55,10 +60,20 @@ interface WorkoutState {
   updateSet: (
     exerciseId: string,
     setId: string,
-    patch: Partial<Pick<WorkoutSet, 'reps' | 'weightKg'>>,
+    patch: Partial<Pick<WorkoutSet, 'reps' | 'weightKg' | 'type' | 'rpe'>>,
   ) => void;
   addSet: (exerciseId: string) => void;
   removeSet: (exerciseId: string, setId: string) => void;
+  /** Pone ese peso en las series efectivas aún sin completar. */
+  applyWeight: (exerciseId: string, weightKg: number) => void;
+  /** Sustituye los calentamientos pendientes por estos (al principio). */
+  setWarmups: (exerciseId: string, steps: { reps: number; weightKg: number }[]) => void;
+  /** Editar la sesión en curso. */
+  addExercise: (catalogId: string) => void;
+  removeExercise: (exerciseId: string) => void;
+  moveExercise: (exerciseId: string, delta: number) => void;
+  toggleSupersetWithNext: (exerciseId: string) => void;
+  setNotes: (exerciseId: string, notes: string) => void;
   addRound: () => void;
   startRest: (durationSec: number) => void;
   extendRest: (seconds: number) => void;
@@ -71,8 +86,29 @@ interface WorkoutState {
   cancelWorkout: () => void;
 }
 
-function newSet(reps = 0, weightKg = 0): WorkoutSet {
-  return { id: createId(), reps, weightKg, completed: false };
+function newSet(reps = 0, weightKg = 0, type?: WorkoutSet['type']): WorkoutSet {
+  return { id: createId(), reps, weightKg, completed: false, ...(type ? { type } : {}) };
+}
+
+/**
+ * Ejercicio de gimnasio para la sesión, pre-rellenado con el peso de la
+ * última vez que se hizo (si existe) y las reps objetivo.
+ */
+function gymExercise(re: RoutineExercise): WorkoutExercise {
+  const previous = lastPerformance(useHistoryStore.getState().sessions, re.exerciseId);
+  return {
+    id: createId(),
+    exerciseId: re.exerciseId,
+    name: findExercise(re.exerciseId)?.name ?? re.exerciseId,
+    target: `${re.targetSets} x ${re.targetReps}`,
+    targetReps: re.targetReps,
+    restSec: re.restSec,
+    previous,
+    supersetGroup: re.supersetGroup,
+    sets: Array.from({ length: re.targetSets }, (_, i) =>
+      newSet(re.targetReps, (previous?.[i] ?? previous?.[previous.length - 1])?.weightKg ?? 0),
+    ),
+  };
 }
 
 export const useWorkoutStore = create<WorkoutState>()(
@@ -137,34 +173,113 @@ export const useWorkoutStore = create<WorkoutState>()(
               sourceId: routine.id,
               startedAt: Date.now(),
               roundsCompleted: 0,
-              exercises: routine.exercises.map((re) => ({
-                id: createId(),
-                exerciseId: re.exerciseId,
-                name: findExercise(re.exerciseId)?.name ?? re.exerciseId,
-                target: `${re.targetSets} x ${re.targetReps}`,
-                restSec: re.restSec,
-                sets: Array.from({ length: re.targetSets }, () =>
-                  newSet(re.targetReps),
-                ),
-              })),
+              exercises: normalizeSupersets(routine.exercises.map(gymExercise)),
             },
           });
         },
 
         toggleSet: (exerciseId, setId) => {
           const active = get().active;
-          const exercise = active?.exercises.find((ex) => ex.id === exerciseId);
+          const index = active?.exercises.findIndex((ex) => ex.id === exerciseId) ?? -1;
+          const exercise = active?.exercises[index];
           const target = exercise?.sets.find((s) => s.id === setId);
           if (!active || !exercise || !target) return;
 
           mapExercise(exerciseId, (sets) =>
             sets.map((s) => (s.id === setId ? { ...s, completed: !s.completed } : s)),
           );
-          // Descanso automático al completar una serie de gimnasio.
-          if (!target.completed && active.mode === 'gym' && exercise.restSec > 0) {
-            get().startRest(exercise.restSec);
-          }
+          // Descanso automático al completar una serie efectiva de gimnasio.
+          // En una superserie se descansa sólo tras el último ejercicio del tramo.
+          const shouldRest =
+            !target.completed &&
+            active.mode === 'gym' &&
+            isWorkingSet(target) &&
+            exercise.restSec > 0 &&
+            useAppStore.getState().autoRest &&
+            !isLinkedWithNext(active.exercises, index);
+          if (shouldRest) get().startRest(exercise.restSec);
         },
+
+        applyWeight: (exerciseId, weightKg) =>
+          mapExercise(exerciseId, (sets) =>
+            sets.map((s) => (!s.completed && isWorkingSet(s) ? { ...s, weightKg } : s)),
+          ),
+
+        setWarmups: (exerciseId, steps) =>
+          mapExercise(exerciseId, (sets) => [
+            ...steps.map((step) => newSet(step.reps, step.weightKg, 'warmup')),
+            // Se conservan los calentamientos ya hechos y todas las efectivas.
+            ...sets.filter((s) => isWorkingSet(s) || s.completed),
+          ]),
+
+        addExercise: (catalogId) =>
+          set((state) => {
+            if (!state.active) return state;
+            const restSec = useAppStore.getState().defaultRestSec;
+            const exercise: WorkoutExercise =
+              state.active.mode === 'gym'
+                ? gymExercise({ exerciseId: catalogId, targetSets: 3, targetReps: 10, restSec })
+                : {
+                    id: createId(),
+                    exerciseId: catalogId,
+                    name: findExercise(catalogId)?.name ?? catalogId,
+                    target: 'Añadido en la sesión',
+                    restSec: 0,
+                    sets: Array.from({ length: 3 }, () => newSet()),
+                  };
+            return { active: { ...state.active, exercises: [...state.active.exercises, exercise] } };
+          }),
+
+        removeExercise: (exerciseId) =>
+          set((state) =>
+            state.active
+              ? {
+                  active: {
+                    ...state.active,
+                    exercises: normalizeSupersets(
+                      state.active.exercises.filter((ex) => ex.id !== exerciseId),
+                    ),
+                  },
+                }
+              : state,
+          ),
+
+        moveExercise: (exerciseId, delta) =>
+          set((state) => {
+            if (!state.active) return state;
+            const list = [...state.active.exercises];
+            const from = list.findIndex((ex) => ex.id === exerciseId);
+            const to = from + delta;
+            if (from < 0 || to < 0 || to >= list.length) return state;
+            [list[from], list[to]] = [list[to], list[from]];
+            return { active: { ...state.active, exercises: normalizeSupersets(list) } };
+          }),
+
+        toggleSupersetWithNext: (exerciseId) =>
+          set((state) => {
+            if (!state.active) return state;
+            const index = state.active.exercises.findIndex((ex) => ex.id === exerciseId);
+            return {
+              active: {
+                ...state.active,
+                exercises: toggleLinkWithNext(state.active.exercises, index),
+              },
+            };
+          }),
+
+        setNotes: (exerciseId, notes) =>
+          set((state) =>
+            state.active
+              ? {
+                  active: {
+                    ...state.active,
+                    exercises: state.active.exercises.map((ex) =>
+                      ex.id === exerciseId ? { ...ex, notes } : ex,
+                    ),
+                  },
+                }
+              : state,
+          ),
 
         updateSet: (exerciseId, setId, patch) =>
           mapExercise(exerciseId, (sets) =>
@@ -173,7 +288,7 @@ export const useWorkoutStore = create<WorkoutState>()(
 
         addSet: (exerciseId) =>
           mapExercise(exerciseId, (sets) => {
-            const last = sets[sets.length - 1];
+            const last = [...sets].reverse().find(isWorkingSet) ?? sets[sets.length - 1];
             return [...sets, newSet(last?.reps, last?.weightKg)];
           }),
 

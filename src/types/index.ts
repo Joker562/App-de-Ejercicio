@@ -116,6 +116,8 @@ export interface RoutineExercise {
   targetSets: number;
   targetReps: number;
   restSec: number;
+  /** Ejercicios consecutivos con el mismo grupo forman una superserie. */
+  supersetGroup?: string;
 }
 
 export interface GymRoutine {
@@ -126,12 +128,28 @@ export interface GymRoutine {
   templateId?: string;
 }
 
+/**
+ * normal: serie efectiva. warmup: calentamiento (no cuenta para volumen ni
+ * récords). drop: dropset. failure: llevada al fallo.
+ */
+export type SetType = 'normal' | 'warmup' | 'drop' | 'failure';
+
 export interface WorkoutSet {
   id: string;
   reps: number;
   /** Siempre en kg; la conversión a lbs se hace sólo al mostrar. */
   weightKg: number;
   completed: boolean;
+  /** Sin definir = normal (datos anteriores a los tipos de serie). */
+  type?: SetType;
+  /** Esfuerzo percibido, 6-10. */
+  rpe?: number;
+}
+
+/** Serie de la sesión anterior del mismo ejercicio, para "la última vez". */
+export interface PreviousSet {
+  reps: number;
+  weightKg: number;
 }
 
 export interface WorkoutExercise {
@@ -141,6 +159,12 @@ export interface WorkoutExercise {
   target: string;
   restSec: number;
   sets: WorkoutSet[];
+  /** Reps objetivo por serie (gimnasio), para sugerir progresión. */
+  targetReps?: number;
+  /** Series efectivas completadas la última vez que se hizo este ejercicio. */
+  previous?: PreviousSet[];
+  notes?: string;
+  supersetGroup?: string;
 }
 
 export interface ActiveWorkout {

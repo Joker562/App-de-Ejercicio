@@ -4,6 +4,7 @@ import { ActiveWorkoutScreen } from '../screens/ActiveWorkoutScreen';
 import { DashboardScreen } from '../screens/DashboardScreen';
 import { ExerciseDetailScreen } from '../screens/gym/ExerciseDetailScreen';
 import { ExerciseLibraryScreen } from '../screens/gym/ExerciseLibraryScreen';
+import { PlateCalculatorScreen } from '../screens/gym/PlateCalculatorScreen';
 import { RoutineBuilderScreen } from '../screens/gym/RoutineBuilderScreen';
 import { RoutineListScreen } from '../screens/gym/RoutineListScreen';
 import { RoutineTemplatesScreen } from '../screens/gym/RoutineTemplatesScreen';
@@ -47,12 +48,17 @@ export function DashboardStack() {
         name="ExerciseLibrary"
         component={ExerciseLibraryScreen}
         options={({ route }) => ({
-          title: route.params?.pickForRoutine
+          title: route.params?.pickFor
             ? 'Elegir ejercicio'
             : mode === 'military'
               ? 'Ejercicios militares'
               : 'Ejercicios de gimnasio',
         })}
+      />
+      <Stack.Screen
+        name="PlateCalculator"
+        component={PlateCalculatorScreen}
+        options={{ title: 'Discos y calentamiento' }}
       />
       <Stack.Screen
         name="ExerciseDetail"

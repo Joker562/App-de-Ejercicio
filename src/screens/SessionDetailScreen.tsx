@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { SET_TYPE_LABELS, setTypeColor } from '../components/SetRow';
 import { Button, Card, Screen } from '../components/ui';
 import type { HistoryScreenProps } from '../navigation/types';
 import { useAppStore } from '../store/useAppStore';
@@ -9,6 +10,7 @@ import { MODE_LABELS } from '../theme/palettes';
 import { useTheme } from '../theme/useTheme';
 import { confirmAction } from '../utils/dialogs';
 import { formatDate, formatDuration, kgToUnit } from '../utils/format';
+import { isWorkingSet } from '../utils/progression';
 import { completedSetCount, sessionVolumeKg } from '../utils/stats';
 
 /** Detalle de una sesión terminada. Borrar está aquí, tras confirmar. */
@@ -27,7 +29,7 @@ export function SessionDetailScreen({ navigation, route }: HistoryScreenProps<'S
   }
 
   const isGym = session.mode === 'gym';
-  const totalSets = session.exercises.reduce((n, ex) => n + ex.sets.length, 0);
+  const totalSets = session.exercises.reduce((n, ex) => n + ex.sets.filter(isWorkingSet).length, 0);
   const stats = [
     { label: 'Duración', value: formatDuration(session.durationSec) },
     { label: 'Series', value: `${completedSetCount(session)}/${totalSets}` },
@@ -85,26 +87,43 @@ export function SessionDetailScreen({ navigation, route }: HistoryScreenProps<'S
               </Pressable>
             ) : null}
           </View>
-          <Text style={[styles.target, { color: theme.textMuted }]}>Objetivo: {exercise.target}</Text>
-          {exercise.sets.map((set, i) => (
-            <View key={set.id} style={styles.setRow}>
-              <Ionicons
-                name={set.completed ? 'checkmark-circle' : 'ellipse-outline'}
-                size={18}
-                color={set.completed ? theme.success : theme.textMuted}
-              />
-              <Text
-                style={[
-                  styles.setText,
-                  { color: set.completed ? theme.text : theme.textMuted },
-                ]}
-              >
-                Serie {i + 1}
-                {isGym ? ` · ${set.reps} reps × ${kgToUnit(set.weightKg, unit)} ${unit}` : ''}
-                {set.completed ? '' : ' (sin completar)'}
-              </Text>
-            </View>
-          ))}
+          <Text style={[styles.target, { color: theme.textMuted }]}>
+            Objetivo: {exercise.target}
+            {exercise.supersetGroup ? ' · Superserie' : ''}
+          </Text>
+          {exercise.sets.map((set, i) => {
+            const type = set.type ?? 'normal';
+            return (
+              <View key={set.id} style={styles.setRow}>
+                <Ionicons
+                  name={set.completed ? 'checkmark-circle' : 'ellipse-outline'}
+                  size={18}
+                  color={set.completed ? theme.success : theme.textMuted}
+                />
+                <Text
+                  style={[
+                    styles.setText,
+                    { color: set.completed ? theme.text : theme.textMuted },
+                  ]}
+                >
+                  {type === 'warmup'
+                    ? 'Calentamiento'
+                    : `Serie ${exercise.sets.slice(0, i + 1).filter(isWorkingSet).length}`}
+                  {isGym ? ` · ${set.reps} reps × ${kgToUnit(set.weightKg, unit)} ${unit}` : ''}
+                  {set.rpe ? ` · RPE ${set.rpe}` : ''}
+                  {set.completed ? '' : ' (sin completar)'}
+                </Text>
+                {type === 'drop' || type === 'failure' ? (
+                  <Text style={[styles.typeTag, { color: setTypeColor(type, theme) }]}>
+                    {SET_TYPE_LABELS[type]}
+                  </Text>
+                ) : null}
+              </View>
+            );
+          })}
+          {exercise.notes ? (
+            <Text style={[styles.notes, { color: theme.textMuted }]}>Nota: {exercise.notes}</Text>
+          ) : null}
         </Card>
       ))}
 
@@ -126,5 +145,7 @@ const styles = StyleSheet.create({
   exerciseName: { flex: 1, fontSize: 17, fontWeight: '700' },
   target: { fontSize: 13 },
   setRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  setText: { fontSize: 14, fontVariant: ['tabular-nums'] },
+  setText: { flex: 1, fontSize: 14, fontVariant: ['tabular-nums'] },
+  typeTag: { fontSize: 12, fontWeight: '700' },
+  notes: { fontSize: 13, fontStyle: 'italic' },
 });

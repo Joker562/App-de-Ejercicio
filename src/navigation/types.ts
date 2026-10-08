@@ -5,6 +5,8 @@ import type {
 } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
+export type PickTarget = 'routine' | 'workout';
+
 export type DashboardStackParamList = {
   Dashboard: undefined;
   ProgramList: undefined;
@@ -18,9 +20,13 @@ export type DashboardStackParamList = {
         picked?: { exerciseId: string; nonce: string };
       }
     | undefined;
-  /** Con pickForRoutine, la biblioteca sirve para elegir ejercicios de una rutina. */
-  ExerciseLibrary: { pickForRoutine?: boolean } | undefined;
-  ExerciseDetail: { exerciseId: string; pickForRoutine?: boolean };
+  /**
+   * Con pickFor, la biblioteca sirve para elegir un ejercicio: para la rutina
+   * que se está creando o para añadirlo a la sesión en curso.
+   */
+  ExerciseLibrary: { pickFor?: PickTarget } | undefined;
+  ExerciseDetail: { exerciseId: string; pickFor?: PickTarget };
+  PlateCalculator: { weightKg?: number } | undefined;
   ActiveWorkout: undefined;
 };
 

@@ -1,6 +1,7 @@
 import { MILITARY_LEVELS } from '../data/data';
 import type { MilitaryLevel, Session, TrainingMode } from '../types';
 import { estimateOneRepMax } from './oneRepMax';
+import { isWorkingSet } from './progression';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -38,7 +39,7 @@ export function sessionVolumeKg(session: Session): number {
     (total, ex) =>
       total +
       ex.sets
-        .filter((s) => s.completed)
+        .filter((s) => s.completed && isWorkingSet(s))
         .reduce((sum, s) => sum + s.reps * s.weightKg, 0),
     0,
   );
@@ -46,7 +47,7 @@ export function sessionVolumeKg(session: Session): number {
 
 export function completedSetCount(session: Session): number {
   return session.exercises.reduce(
-    (total, ex) => total + ex.sets.filter((s) => s.completed).length,
+    (total, ex) => total + ex.sets.filter((s) => s.completed && isWorkingSet(s)).length,
     0,
   );
 }
@@ -122,7 +123,7 @@ export function exerciseRecords(sessions: Session[]): ExerciseRecord[] {
       session.exercises.forEach((ex) => {
         if (!ex.exerciseId) return;
         ex.sets
-          .filter((set) => set.completed)
+          .filter((set) => set.completed && isWorkingSet(set))
           .forEach((set) => {
             const prev = records.get(ex.exerciseId!) ?? {
               exerciseId: ex.exerciseId!,

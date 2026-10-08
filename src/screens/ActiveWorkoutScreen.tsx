@@ -1,17 +1,19 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { IntervalTimer } from '../components/IntervalTimer';
 import { RestTimer } from '../components/RestTimer';
-import { SetRow } from '../components/SetRow';
-import { Button, Card, Screen } from '../components/ui';
+import { WorkoutExerciseCard } from '../components/WorkoutExerciseCard';
+import { Button, Screen } from '../components/ui';
 import type { DashboardScreenProps } from '../navigation/types';
 import { useWorkoutStore } from '../store/useWorkoutStore';
 import { useTheme } from '../theme/useTheme';
 import type { ClockControls } from '../utils/clock';
 import { confirmAction } from '../utils/dialogs';
 import { formatDuration } from '../utils/format';
+import { isWorkingSet } from '../utils/progression';
+import { isLinkedWithNext } from '../utils/supersets';
 import { useKeepScreenOn } from '../utils/useKeepScreenOn';
 import { useNow } from '../utils/useNow';
 
@@ -28,7 +30,6 @@ export function ActiveWorkoutScreen({ navigation }: DashboardScreenProps<'Active
   const pauseTimer = useWorkoutStore((s) => s.pauseTimer);
   const resetTimer = useWorkoutStore((s) => s.resetTimer);
   const addRound = useWorkoutStore((s) => s.addRound);
-  const addSet = useWorkoutStore((s) => s.addSet);
   const finishWorkout = useWorkoutStore((s) => s.finishWorkout);
   const cancelWorkout = useWorkoutStore((s) => s.cancelWorkout);
   const now = useNow(active !== null, 1000);
@@ -51,9 +52,10 @@ export function ActiveWorkoutScreen({ navigation }: DashboardScreenProps<'Active
     );
   }
 
-  const totalSets = active.exercises.reduce((n, ex) => n + ex.sets.length, 0);
+  // Series efectivas: los calentamientos no cuentan.
+  const totalSets = active.exercises.reduce((n, ex) => n + ex.sets.filter(isWorkingSet).length, 0);
   const doneSets = active.exercises.reduce(
-    (n, ex) => n + ex.sets.filter((s) => s.completed).length,
+    (n, ex) => n + ex.sets.filter((s) => s.completed && isWorkingSet(s)).length,
     0,
   );
 
@@ -115,50 +117,36 @@ export function ActiveWorkoutScreen({ navigation }: DashboardScreenProps<'Active
           />
         ) : null}
 
-        {active.exercises.map((exercise) => (
-          <Card key={exercise.id}>
-            <View style={styles.exerciseHeader}>
-              <Text style={[styles.exerciseName, { color: theme.text }]}>{exercise.name}</Text>
-              <Text style={[styles.target, { color: theme.accent }]}>{exercise.target}</Text>
-              {exercise.exerciseId ? (
-                <Pressable
-                  onPress={() =>
-                    navigation.navigate('ExerciseDetail', { exerciseId: exercise.exerciseId! })
-                  }
-                  hitSlop={8}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Ver cómo se hace ${exercise.name}`}
-                >
-                  <Ionicons name="information-circle-outline" size={22} color={theme.accent} />
-                </Pressable>
+        {active.exercises.map((exercise, index) => {
+          const linked = isLinkedWithNext(active.exercises, index);
+          return (
+            <View key={exercise.id} style={styles.exerciseBlock}>
+              <WorkoutExerciseCard
+                exercise={exercise}
+                mode={active.mode}
+                isFirst={index === 0}
+                isLast={index === active.exercises.length - 1}
+                linkedWithNext={linked}
+                onOpenDetail={(exerciseId) => navigation.navigate('ExerciseDetail', { exerciseId })}
+                onOpenPlates={(weightKg) => navigation.navigate('PlateCalculator', { weightKg })}
+              />
+              {linked ? (
+                <View style={styles.supersetLink}>
+                  <Ionicons name="link" size={14} color={theme.accent} />
+                  <Text style={[styles.supersetText, { color: theme.accent }]}>
+                    Superserie: sin descanso hasta el último ejercicio
+                  </Text>
+                </View>
               ) : null}
             </View>
+          );
+        })}
 
-            {active.mode === 'gym' && exercise.sets.length > 0 ? (
-              <View style={styles.columns}>
-                <Text style={[styles.column, styles.indexColumn, { color: theme.textMuted }]}>#</Text>
-                <Text style={[styles.column, { color: theme.textMuted }]}>Reps</Text>
-                <Text style={[styles.column, { color: theme.textMuted }]}>Peso</Text>
-                <View style={styles.trailing} />
-              </View>
-            ) : null}
-
-            {exercise.sets.map((set, index) => (
-              <SetRow
-                key={set.id}
-                exerciseId={exercise.id}
-                set={set}
-                index={index}
-                mode={active.mode}
-              />
-            ))}
-
-            {active.mode === 'gym' ? (
-              <Button title="+ Añadir serie" variant="secondary" onPress={() => addSet(exercise.id)} />
-            ) : null}
-          </Card>
-        ))}
-
+        <Button
+          title="+ Añadir ejercicio"
+          variant="secondary"
+          onPress={() => navigation.navigate('ExerciseLibrary', { pickFor: 'workout' })}
+        />
         <Button title="Terminar y guardar" onPress={finish} />
         <Button title="Descartar" variant="danger" onPress={cancel} />
         {/* Hueco para que el descanso flotante no tape los botones finales. */}
@@ -179,14 +167,9 @@ const styles = StyleSheet.create({
   header: { gap: 2 },
   title: { fontSize: 24, fontWeight: '800' },
   meta: { fontSize: 14, fontVariant: ['tabular-nums'] },
-  exerciseHeader: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 },
-  exerciseName: { fontSize: 18, fontWeight: '700', flex: 1 },
-  target: { fontSize: 13, fontWeight: '700' },
-  columns: { flexDirection: 'row', gap: 10, paddingHorizontal: 8 },
-  column: { flex: 1, fontSize: 12, textAlign: 'center' },
-  indexColumn: { flex: 0, minWidth: 28, textAlign: 'left' },
-  // Ancho del icono de borrar + checkbox + huecos de SetRow.
-  trailing: { width: 72 },
+  exerciseBlock: { gap: 4 },
+  supersetLink: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 12 },
+  supersetText: { fontSize: 12, fontWeight: '700' },
   restDock: { position: 'absolute', left: 12, right: 12, bottom: 12 },
   restSpacer: { height: 110 },
 });

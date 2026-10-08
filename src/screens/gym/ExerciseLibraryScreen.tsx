@@ -13,7 +13,7 @@ import {
   filterExercises,
 } from '../../data/exercises';
 import type { DashboardScreenProps } from '../../navigation/types';
-import { useAppStore } from '../../store/useAppStore';
+import { usePickExercise, usePickMode } from '../../navigation/usePickExercise';
 import { useTheme } from '../../theme/useTheme';
 import type {
   Equipment,
@@ -22,7 +22,6 @@ import type {
   MuscleGroup,
   TrainingMode,
 } from '../../types';
-import { createId } from '../../utils/format';
 
 const MUSCLE_OPTIONS = MUSCLE_GROUPS.map((g) => ({ value: g, label: g }));
 
@@ -43,18 +42,17 @@ function optionsForMode(mode: TrainingMode) {
 
 /**
  * Catálogo del modo activo (militar o gimnasio) con búsqueda y filtros. Con
- * pickForRoutine, cada fila tiene un botón para añadir el ejercicio a la
- * rutina de gimnasio que se está creando.
+ * pickFor, cada fila tiene un botón para añadir el ejercicio a la rutina que
+ * se está creando o a la sesión en curso.
  */
 export function ExerciseLibraryScreen({
   navigation,
   route,
 }: DashboardScreenProps<'ExerciseLibrary'>) {
   const theme = useTheme();
-  const pickForRoutine = route.params?.pickForRoutine ?? false;
-  const appMode = useAppStore((s) => s.mode);
-  // Las rutinas personalizadas son de gimnasio.
-  const mode: TrainingMode = pickForRoutine ? 'gym' : appMode;
+  const pickFor = route.params?.pickFor;
+  const pick = usePickExercise(pickFor);
+  const mode = usePickMode(pickFor);
   const options = useMemo(() => optionsForMode(mode), [mode]);
 
   const [query, setQuery] = useState('');
@@ -67,18 +65,9 @@ export function ExerciseLibraryScreen({
     [mode, query, muscleGroup, equipment, category],
   );
 
-  const pick = (exercise: Exercise) =>
-    navigation.popTo(
-      'RoutineBuilder',
-      { picked: { exerciseId: exercise.id, nonce: createId() } },
-      { merge: true },
-    );
-
   const renderItem = ({ item }: { item: Exercise }) => (
     <Pressable
-      onPress={() =>
-        navigation.navigate('ExerciseDetail', { exerciseId: item.id, pickForRoutine })
-      }
+      onPress={() => navigation.navigate('ExerciseDetail', { exerciseId: item.id, pickFor })}
       style={({ pressed }) => [
         styles.item,
         { backgroundColor: theme.surface, borderColor: theme.border, opacity: pressed ? 0.8 : 1 },
@@ -94,12 +83,12 @@ export function ExerciseLibraryScreen({
           {EQUIPMENT_LABELS[item.equipment]}
         </Text>
       </View>
-      {pickForRoutine ? (
+      {pick ? (
         <Pressable
-          onPress={() => pick(item)}
+          onPress={() => pick(item.id)}
           hitSlop={8}
           accessibilityRole="button"
-          accessibilityLabel={`Añadir ${item.name} a la rutina`}
+          accessibilityLabel={`Añadir ${item.name} a la ${pickFor === 'routine' ? 'rutina' : 'sesión'}`}
         >
           <Ionicons name="add-circle" size={30} color={theme.accent} />
         </Pressable>
@@ -147,7 +136,7 @@ export function ExerciseLibraryScreen({
         <Text style={[styles.count, { color: theme.textMuted }]}>
           {results.length} {results.length === 1 ? 'ejercicio' : 'ejercicios'}
           {mode === 'military' ? ' de calistenia militar' : ' de gimnasio'}
-          {pickForRoutine ? ' · toca + para añadir' : ''}
+          {pick ? ' · toca + para añadir' : ''}
         </Text>
       </View>
 

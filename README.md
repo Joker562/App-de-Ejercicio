@@ -3,7 +3,12 @@
 Aplicación de fitness con dos modos:
 
 - **Modo Militar**: calistenia, resistencia y disciplina. Programas predefinidos (Murph, prueba de condición física, Cindy, EMOM, Tabata), temporizadores AMRAP/EMOM/Tabata, registro rápido con checkbox y rangos de Recluta a Fuerzas Especiales.
-- **Modo Gimnasio**: hipertrofia y fuerza. Creador de rutinas, biblioteca de ejercicios por grupo muscular, registro de series/reps/peso (kg o lbs), descanso automático entre series, historial de volumen y 1RM estimado.
+- **Modo Gimnasio**: hipertrofia y fuerza. Creador de rutinas, biblioteca de ejercicios por grupo muscular, registro de series/reps/peso (kg o lbs), descanso automático entre series, historial de volumen y 1RM estimado. Durante la sesión:
+  - "La última vez": el peso se rellena con la sesión anterior y se muestra la serie previa; si completaste todo, sugiere subir el peso (doble progresión).
+  - Tipos de serie (calentamiento, dropset, al fallo), RPE y notas por ejercicio.
+  - Superseries (el descanso llega tras el último ejercicio del grupo), añadir, quitar y reordenar ejercicios.
+  - Calentamiento automático y calculadora de discos por lado.
+  - Descanso por defecto y descanso automático configurables en Perfil.
 
 Cada modo tiene su paleta: verde oliva/negro para militar y azul/gris oscuro para gimnasio.
 

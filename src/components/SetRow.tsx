@@ -4,27 +4,47 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useAppStore } from '../store/useAppStore';
 import { useWorkoutStore } from '../store/useWorkoutStore';
+import type { Palette } from '../theme/palettes';
 import { useTheme } from '../theme/useTheme';
-import type { TrainingMode, WorkoutSet } from '../types';
+import type { PreviousSet, SetType, TrainingMode, WorkoutSet } from '../types';
 import { kgToUnit, unitToKg } from '../utils/format';
 
 interface Props {
   exerciseId: string;
   set: WorkoutSet;
-  index: number;
+  /** Número a mostrar (las series de calentamiento no cuentan). */
+  label: string;
   mode: TrainingMode;
+  /** Serie equivalente de la última sesión, para la columna "Anterior". */
+  previous?: PreviousSet;
+}
+
+export const SET_TYPE_LABELS: Record<SetType, string> = {
+  normal: 'Normal',
+  warmup: 'Calentamiento',
+  drop: 'Dropset',
+  failure: 'Al fallo',
+};
+
+const SET_TYPE_SHORT: Record<SetType, string> = { normal: '', warmup: 'C', drop: 'D', failure: 'F' };
+const RPE_OPTIONS = [6, 7, 8, 9, 10];
+
+export function setTypeColor(type: SetType, theme: Palette): string {
+  return { normal: theme.textMuted, warmup: theme.accent, drop: theme.primary, failure: theme.danger }[type];
 }
 
 /**
  * Fila de una serie. En modo militar es sólo un checkbox; en gimnasio añade
- * inputs de repeticiones y peso (mostrado en la unidad del usuario).
+ * la serie anterior, reps y peso (en la unidad del usuario). Tocar el número
+ * abre el tipo de serie y el RPE.
  */
-export function SetRow({ exerciseId, set, index, mode }: Props) {
+export function SetRow({ exerciseId, set, label, mode, previous }: Props) {
   const theme = useTheme();
   const unit = useAppStore((s) => s.unit);
   const toggleSet = useWorkoutStore((s) => s.toggleSet);
   const updateSet = useWorkoutStore((s) => s.updateSet);
   const removeSet = useWorkoutStore((s) => s.removeSet);
+  const [expanded, setExpanded] = useState(false);
 
   const [reps, setReps] = useState(String(set.reps || ''));
   const [weight, setWeight] = useState(set.weightKg ? String(kgToUnit(set.weightKg, unit)) : '');
@@ -56,98 +76,183 @@ export function SetRow({ exerciseId, set, index, mode }: Props) {
     });
   };
 
+  const type = set.type ?? 'normal';
+  const typeColor = setTypeColor(type, theme);
   const inputStyle = [
     styles.input,
     { color: theme.text, backgroundColor: theme.surfaceAlt, borderColor: theme.border },
   ];
 
-  return (
-    <View
+  const checkbox = (
+    <Pressable
+      onPress={() => toggleSet(exerciseId, set.id)}
+      hitSlop={8}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: set.completed }}
+      accessibilityLabel={`Completar serie ${label}`}
       style={[
-        styles.row,
-        set.completed && { backgroundColor: theme.surfaceAlt },
+        styles.checkbox,
+        {
+          borderColor: set.completed ? theme.success : theme.border,
+          backgroundColor: set.completed ? theme.success : 'transparent',
+        },
       ]}
     >
-      <Text style={[styles.index, { color: theme.textMuted }]}>
-        {mode === 'military' ? `Serie ${index + 1}` : index + 1}
-      </Text>
+      {set.completed ? <Ionicons name="checkmark" size={20} color={theme.onPrimary} /> : null}
+    </Pressable>
+  );
 
-      {mode === 'gym' ? (
-        <>
-          <TextInput
-            style={inputStyle}
-            value={reps}
-            onChangeText={changeReps}
-            onFocus={() => (editing.current = 'reps')}
-            onBlur={() => (editing.current = null)}
-            keyboardType="number-pad"
-            placeholder="reps"
-            placeholderTextColor={theme.textMuted}
-            accessibilityLabel={`Repeticiones serie ${index + 1}`}
-          />
-          <TextInput
-            style={inputStyle}
-            value={weight}
-            onChangeText={changeWeight}
-            onFocus={() => (editing.current = 'weight')}
-            onBlur={() => (editing.current = null)}
-            keyboardType="decimal-pad"
-            placeholder={unit}
-            placeholderTextColor={theme.textMuted}
-            accessibilityLabel={`Peso serie ${index + 1} en ${unit}`}
-          />
-          <Pressable
-            onPress={() => removeSet(exerciseId, set.id)}
-            hitSlop={8}
-            accessibilityLabel={`Eliminar serie ${index + 1}`}
-          >
-            <Ionicons name="close" size={18} color={theme.textMuted} />
-          </Pressable>
-        </>
-      ) : (
-        <View style={styles.spacer} />
-      )}
+  if (mode === 'military') {
+    return (
+      <View style={[styles.row, set.completed && { backgroundColor: theme.surfaceAlt }]}>
+        <Text style={[styles.militaryLabel, { color: theme.textMuted }]}>Serie {label}</Text>
+        {checkbox}
+      </View>
+    );
+  }
 
-      <Pressable
-        onPress={() => toggleSet(exerciseId, set.id)}
-        hitSlop={8}
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: set.completed }}
-        accessibilityLabel={`Completar serie ${index + 1}`}
-        style={[
-          styles.checkbox,
-          {
-            borderColor: set.completed ? theme.success : theme.border,
-            backgroundColor: set.completed ? theme.success : 'transparent',
-          },
-        ]}
-      >
-        {set.completed ? <Ionicons name="checkmark" size={20} color={theme.onPrimary} /> : null}
-      </Pressable>
+  return (
+    <View style={[styles.wrapper, set.completed && { backgroundColor: theme.surfaceAlt }]}>
+      <View style={styles.row}>
+        <Pressable
+          onPress={() => setExpanded((e) => !e)}
+          hitSlop={6}
+          accessibilityRole="button"
+          accessibilityLabel={`Serie ${label}: ${SET_TYPE_LABELS[type]}. Cambiar tipo y RPE`}
+          style={[styles.badge, { borderColor: type === 'normal' ? theme.border : typeColor }]}
+        >
+          <Text style={[styles.badgeText, { color: typeColor }]}>
+            {SET_TYPE_SHORT[type] || label}
+          </Text>
+        </Pressable>
+
+        <Text style={[styles.previous, { color: theme.textMuted }]} numberOfLines={1}>
+          {previous ? `${kgToUnit(previous.weightKg, unit)}×${previous.reps}` : '—'}
+        </Text>
+
+        <TextInput
+          style={inputStyle}
+          value={reps}
+          onChangeText={changeReps}
+          onFocus={() => (editing.current = 'reps')}
+          onBlur={() => (editing.current = null)}
+          keyboardType="number-pad"
+          placeholder="reps"
+          placeholderTextColor={theme.textMuted}
+          accessibilityLabel={`Repeticiones serie ${label}`}
+        />
+        <TextInput
+          style={inputStyle}
+          value={weight}
+          onChangeText={changeWeight}
+          onFocus={() => (editing.current = 'weight')}
+          onBlur={() => (editing.current = null)}
+          keyboardType="decimal-pad"
+          placeholder={unit}
+          placeholderTextColor={theme.textMuted}
+          accessibilityLabel={`Peso serie ${label} en ${unit}`}
+        />
+        <Pressable
+          onPress={() => removeSet(exerciseId, set.id)}
+          hitSlop={8}
+          accessibilityLabel={`Eliminar serie ${label}`}
+        >
+          <Ionicons name="close" size={18} color={theme.textMuted} />
+        </Pressable>
+        {checkbox}
+      </View>
+
+      {set.rpe && !expanded ? (
+        <Text style={[styles.rpeNote, { color: theme.textMuted }]}>RPE {set.rpe}</Text>
+      ) : null}
+
+      {expanded ? (
+        <View style={[styles.panel, { borderColor: theme.border }]}>
+          <View style={styles.chips}>
+            {(Object.keys(SET_TYPE_LABELS) as SetType[]).map((t) => (
+              <Chip
+                key={t}
+                label={SET_TYPE_LABELS[t]}
+                selected={t === type}
+                onPress={() => updateSet(exerciseId, set.id, { type: t })}
+              />
+            ))}
+          </View>
+          <View style={styles.chips}>
+            <Text style={[styles.panelLabel, { color: theme.textMuted }]}>RPE</Text>
+            <Chip
+              label="—"
+              selected={!set.rpe}
+              onPress={() => updateSet(exerciseId, set.id, { rpe: undefined })}
+            />
+            {RPE_OPTIONS.map((rpe) => (
+              <Chip
+                key={rpe}
+                label={String(rpe)}
+                selected={set.rpe === rpe}
+                onPress={() => updateSet(exerciseId, set.id, { rpe })}
+              />
+            ))}
+          </View>
+        </View>
+      ) : null}
     </View>
   );
 }
 
+function Chip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+  const theme = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+      style={[
+        styles.chip,
+        {
+          backgroundColor: selected ? theme.primary : theme.surface,
+          borderColor: selected ? theme.accent : theme.border,
+        },
+      ]}
+    >
+      <Text style={{ color: selected ? theme.onPrimary : theme.text, fontSize: 12, fontWeight: '600' }}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
+  wrapper: { borderRadius: 10 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
     paddingVertical: 6,
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
     borderRadius: 10,
   },
-  index: { minWidth: 28, fontWeight: '700', fontVariant: ['tabular-nums'] },
+  militaryLabel: { flex: 1, fontWeight: '700' },
+  badge: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: { fontWeight: '800', fontVariant: ['tabular-nums'] },
+  previous: { width: 52, fontSize: 12, textAlign: 'center', fontVariant: ['tabular-nums'] },
   input: {
     flex: 1,
+    minWidth: 0,
     borderWidth: 1,
     borderRadius: 8,
     paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingHorizontal: 6,
     fontSize: 16,
     textAlign: 'center',
   },
-  spacer: { flex: 1 },
   checkbox: {
     width: 34,
     height: 34,
@@ -156,4 +261,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  rpeNote: { fontSize: 11, marginLeft: 42, marginTop: -4, marginBottom: 2 },
+  panel: { borderTopWidth: 1, marginHorizontal: 6, paddingVertical: 8, gap: 8 },
+  panelLabel: { fontSize: 12, fontWeight: '700', marginRight: 2 },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
+  chip: { borderRadius: 999, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4 },
 });

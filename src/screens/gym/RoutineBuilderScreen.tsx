@@ -6,11 +6,13 @@ import { ExerciseAnimation } from '../../components/ExerciseAnimation';
 import { Button, Card, Screen, SectionTitle } from '../../components/ui';
 import { findExercise } from '../../data/exercises';
 import type { DashboardScreenProps } from '../../navigation/types';
+import { useAppStore } from '../../store/useAppStore';
 import { useRoutineStore } from '../../store/useRoutineStore';
 import { useTheme } from '../../theme/useTheme';
 import type { RoutineExercise } from '../../types';
 import { notify } from '../../utils/dialogs';
 import { createId } from '../../utils/format';
+import { isLinkedWithNext, normalizeSupersets, toggleLinkWithNext } from '../../utils/supersets';
 
 type NumericField = 'targetSets' | 'targetReps' | 'restSec';
 
@@ -28,6 +30,7 @@ export function RoutineBuilderScreen({
   const routineId = route.params?.routineId;
   const existing = useRoutineStore((s) => s.routines.find((r) => r.id === routineId));
   const saveRoutine = useRoutineStore((s) => s.saveRoutine);
+  const defaultRestSec = useAppStore((s) => s.defaultRestSec);
 
   const [name, setName] = useState(existing?.name ?? '');
   const [exercises, setExercises] = useState<RoutineExercise[]>(existing?.exercises ?? []);
@@ -38,7 +41,7 @@ export function RoutineBuilderScreen({
     if (!picked) return;
     setExercises((list) => [
       ...list,
-      { exerciseId: picked.exerciseId, targetSets: 3, targetReps: 10, restSec: 90 },
+      { exerciseId: picked.exerciseId, targetSets: 3, targetReps: 10, restSec: defaultRestSec },
     ]);
     navigation.setParams({ picked: undefined });
     // El nonce cambia en cada elección, aunque sea el mismo ejercicio.
@@ -58,10 +61,13 @@ export function RoutineBuilderScreen({
       if (target < 0 || target >= list.length) return list;
       const next = [...list];
       [next[index], next[target]] = [next[target], next[index]];
-      return next;
+      return normalizeSupersets(next);
     });
 
-  const remove = (index: number) => setExercises((list) => list.filter((_, i) => i !== index));
+  const remove = (index: number) =>
+    setExercises((list) => normalizeSupersets(list.filter((_, i) => i !== index)));
+
+  const toggleSuperset = (index: number) => setExercises((list) => toggleLinkWithNext(list, index));
 
   const save = () => {
     if (!name.trim()) return notify('Falta el nombre', 'Ponle un nombre a la rutina.');
@@ -98,53 +104,78 @@ export function RoutineBuilderScreen({
       {exercises.map((ex, index) => {
         const exercise = findExercise(ex.exerciseId);
         return (
-          <Card key={`${ex.exerciseId}-${index}`}>
-            <View style={styles.exerciseHeader}>
-              {exercise ? (
-                <Pressable
-                  onPress={() =>
-                    navigation.navigate('ExerciseDetail', { exerciseId: exercise.id })
-                  }
-                  accessibilityLabel={`Ver cómo se hace ${exercise.name}`}
-                >
-                  <ExerciseAnimation exercise={exercise} animated={false} style={styles.thumb} />
+          <View key={`${ex.exerciseId}-${index}`} style={styles.block}>
+            <Card style={ex.supersetGroup ? { borderLeftWidth: 4, borderLeftColor: theme.accent } : undefined}>
+              <View style={styles.exerciseHeader}>
+                {exercise ? (
+                  <Pressable
+                    onPress={() =>
+                      navigation.navigate('ExerciseDetail', { exerciseId: exercise.id })
+                    }
+                    accessibilityLabel={`Ver cómo se hace ${exercise.name}`}
+                  >
+                    <ExerciseAnimation exercise={exercise} animated={false} style={styles.thumb} />
+                  </Pressable>
+                ) : null}
+                <Text style={[styles.exerciseName, { color: theme.text }]}>
+                  {exercise?.name ?? ex.exerciseId}
+                </Text>
+                <Pressable onPress={() => move(index, -1)} hitSlop={6} accessibilityLabel="Subir">
+                  <Ionicons name="chevron-up" size={20} color={theme.textMuted} />
                 </Pressable>
-              ) : null}
-              <Text style={[styles.exerciseName, { color: theme.text }]}>
-                {exercise?.name ?? ex.exerciseId}
-              </Text>
-              <Pressable onPress={() => move(index, -1)} hitSlop={6} accessibilityLabel="Subir">
-                <Ionicons name="chevron-up" size={20} color={theme.textMuted} />
+                <Pressable onPress={() => move(index, 1)} hitSlop={6} accessibilityLabel="Bajar">
+                  <Ionicons name="chevron-down" size={20} color={theme.textMuted} />
+                </Pressable>
+                <Pressable onPress={() => remove(index)} hitSlop={6} accessibilityLabel="Quitar">
+                  <Ionicons name="trash-outline" size={20} color={theme.danger} />
+                </Pressable>
+              </View>
+              <View style={styles.fields}>
+                {FIELDS.map((field) => (
+                  <View key={field.key} style={styles.field}>
+                    <Text style={[styles.fieldLabel, { color: theme.textMuted }]}>{field.label}</Text>
+                    <TextInput
+                      style={inputStyle}
+                      value={ex[field.key] ? String(ex[field.key]) : ''}
+                      onChangeText={(text) => updateField(index, field.key, text)}
+                      keyboardType="number-pad"
+                      textAlign="center"
+                    />
+                  </View>
+                ))}
+              </View>
+            </Card>
+            {index < exercises.length - 1 ? (
+              <Pressable
+                onPress={() => toggleSuperset(index)}
+                accessibilityRole="button"
+                style={styles.linkRow}
+              >
+                <Ionicons
+                  name={isLinkedWithNext(exercises, index) ? 'link' : 'unlink-outline'}
+                  size={14}
+                  color={isLinkedWithNext(exercises, index) ? theme.accent : theme.textMuted}
+                />
+                <Text
+                  style={[
+                    styles.linkText,
+                    { color: isLinkedWithNext(exercises, index) ? theme.accent : theme.textMuted },
+                  ]}
+                >
+                  {isLinkedWithNext(exercises, index)
+                    ? 'Superserie con el siguiente (toca para separar)'
+                    : 'Hacer superserie con el siguiente'}
+                </Text>
               </Pressable>
-              <Pressable onPress={() => move(index, 1)} hitSlop={6} accessibilityLabel="Bajar">
-                <Ionicons name="chevron-down" size={20} color={theme.textMuted} />
-              </Pressable>
-              <Pressable onPress={() => remove(index)} hitSlop={6} accessibilityLabel="Quitar">
-                <Ionicons name="trash-outline" size={20} color={theme.danger} />
-              </Pressable>
-            </View>
-            <View style={styles.fields}>
-              {FIELDS.map((field) => (
-                <View key={field.key} style={styles.field}>
-                  <Text style={[styles.fieldLabel, { color: theme.textMuted }]}>{field.label}</Text>
-                  <TextInput
-                    style={inputStyle}
-                    value={ex[field.key] ? String(ex[field.key]) : ''}
-                    onChangeText={(text) => updateField(index, field.key, text)}
-                    keyboardType="number-pad"
-                    textAlign="center"
-                  />
-                </View>
-              ))}
-            </View>
-          </Card>
+            ) : null}
+          </View>
         );
       })}
 
       <Button
         title="+ Añadir ejercicio"
         variant="secondary"
-        onPress={() => navigation.navigate('ExerciseLibrary', { pickForRoutine: true })}
+        onPress={() => navigation.navigate('ExerciseLibrary', { pickFor: 'routine' })}
       />
 
       <Button title="Guardar rutina" onPress={save} style={styles.save} />
@@ -155,6 +186,9 @@ export function RoutineBuilderScreen({
 const styles = StyleSheet.create({
   input: { borderWidth: 1, borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, fontSize: 16 },
   exerciseHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  block: { gap: 4 },
+  linkRow: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 12, paddingVertical: 2 },
+  linkText: { fontSize: 12, fontWeight: '600' },
   exerciseName: { flex: 1, fontSize: 16, fontWeight: '700' },
   fields: { flexDirection: 'row', gap: 8 },
   field: { flex: 1, gap: 4 },

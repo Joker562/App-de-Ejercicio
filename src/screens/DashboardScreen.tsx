@@ -70,6 +70,11 @@ export function DashboardScreen({ navigation }: DashboardScreenProps<'Dashboard'
             subtitle={librarySubtitle}
             onPress={() => navigation.navigate('ExerciseLibrary')}
           />
+          <ListItem
+            title="Calculadora de discos"
+            subtitle="Qué discos poner y cómo calentar"
+            onPress={() => navigation.navigate('PlateCalculator')}
+          />
         </>
       )}
     </Screen>
