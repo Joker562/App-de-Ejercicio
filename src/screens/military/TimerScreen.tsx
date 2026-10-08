@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { IntervalTimer } from '../../components/IntervalTimer';
 import { Screen, SectionTitle } from '../../components/ui';
 import { useTheme } from '../../theme/useTheme';
 import type { TimerConfig } from '../../types';
-import { useLocalClock } from '../../utils/clock';
-import { describeTimer } from '../../utils/intervals';
+import { useLocalClock, type ClockControls } from '../../utils/clock';
+import { describeTimer, pendingAlerts } from '../../utils/intervals';
+import { cancelAlerts, scheduleAlerts } from '../../utils/notifications';
+import { useKeepScreenOn } from '../../utils/useKeepScreenOn';
 
 const PRESETS: TimerConfig[] = [
   { type: 'amrap', durationSec: 10 * 60 },
@@ -23,10 +25,31 @@ export function TimerScreen() {
   const [selected, setSelected] = useState(0);
   const [clock, controls] = useLocalClock();
   const [rounds, setRounds] = useState(0);
+  const config = PRESETS[selected];
+  useKeepScreenOn('free-timer');
+
+  // Al salir de la pantalla el reloj local desaparece: cancela sus avisos.
+  useEffect(() => () => cancelAlerts('free-timer'), []);
+
+  // Mismos controles, pero programando/cancelando los avisos de cada fase.
+  const timerControls: ClockControls = {
+    start: () => {
+      controls.start();
+      scheduleAlerts('free-timer', pendingAlerts(config, clock.accumulatedMs / 1000));
+    },
+    pause: () => {
+      controls.pause();
+      cancelAlerts('free-timer');
+    },
+    reset: () => {
+      controls.reset();
+      setRounds(0);
+      cancelAlerts('free-timer');
+    },
+  };
 
   const select = (index: number) => {
-    controls.reset();
-    setRounds(0);
+    timerControls.reset();
     setSelected(index);
   };
 
@@ -60,15 +83,9 @@ export function TimerScreen() {
 
       <IntervalTimer
         key={selected}
-        config={PRESETS[selected]}
+        config={config}
         clock={clock}
-        controls={{
-          ...controls,
-          reset: () => {
-            controls.reset();
-            setRounds(0);
-          },
-        }}
+        controls={timerControls}
         rounds={rounds}
         onAddRound={() => setRounds((r) => r + 1)}
       />

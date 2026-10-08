@@ -37,6 +37,11 @@ export function findExercise(id: string): Exercise | undefined {
   return BY_ID.get(id) ?? BY_ID.get(LEGACY_IDS[id]);
 }
 
+/** Traduce un id de la primera versión al id actual (o lo deja igual). */
+export function resolveExerciseId(id: string): string {
+  return LEGACY_IDS[id] ?? id;
+}
+
 /** Fijado al mismo commit que el script de generación. */
 const IMAGE_BASE_URL =
   'https://raw.githubusercontent.com/yuhonas/free-exercise-db/f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5/exercises/';

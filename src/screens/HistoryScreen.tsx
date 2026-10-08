@@ -1,13 +1,14 @@
+import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ProgressChart } from '../components/ProgressChart';
 import { Card, ListItem, Screen, SectionTitle } from '../components/ui';
+import type { HistoryScreenProps } from '../navigation/types';
 import { useAppStore } from '../store/useAppStore';
 import { useHistoryStore } from '../store/useHistoryStore';
 import { MODE_LABELS } from '../theme/palettes';
 import { useTheme } from '../theme/useTheme';
 import type { Session } from '../types';
-import { confirmAction } from '../utils/dialogs';
 import { formatDate, formatDuration, kgToUnit } from '../utils/format';
 import { completedSetCount, exerciseRecords, sessionVolumeKg } from '../utils/stats';
 
@@ -19,12 +20,11 @@ function shortDate(timestamp: number): string {
 }
 
 /** Historial del modo activo: gráfico de progreso, récords y sesiones. */
-export function HistoryScreen() {
+export function HistoryScreen({ navigation }: HistoryScreenProps<'History'>) {
   const theme = useTheme();
   const mode = useAppStore((s) => s.mode);
   const unit = useAppStore((s) => s.unit);
   const allSessions = useHistoryStore((s) => s.sessions);
-  const removeSession = useHistoryStore((s) => s.removeSession);
 
   const sessions = allSessions.filter((s) => s.mode === mode);
   const recent = sessions.slice(0, CHART_SESSIONS).reverse();
@@ -43,15 +43,6 @@ export function HistoryScreen() {
     else parts.push(`${completedSetCount(s)} series`);
     return parts.join(' · ');
   };
-
-  const confirmDelete = (s: Session) =>
-    confirmAction({
-      title: 'Eliminar sesión',
-      message: `¿Eliminar "${s.title}" del historial?`,
-      confirmText: 'Eliminar',
-      destructive: true,
-      onConfirm: () => removeSession(s.id),
-    });
 
   return (
     <Screen>
@@ -100,15 +91,11 @@ export function HistoryScreen() {
             key={s.id}
             title={s.title}
             subtitle={sessionSubtitle(s)}
-            onPress={() => confirmDelete(s)}
+            onPress={() => navigation.navigate('SessionDetail', { sessionId: s.id })}
+            right={<Ionicons name="chevron-forward" size={18} color={theme.textMuted} />}
           />
         ))
       )}
-      {sessions.length > 0 ? (
-        <Text style={[styles.hint, { color: theme.textMuted }]}>
-          Toca una sesión para eliminarla.
-        </Text>
-      ) : null}
     </Screen>
   );
 }

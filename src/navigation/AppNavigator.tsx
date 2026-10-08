@@ -3,10 +3,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import type { ComponentProps } from 'react';
 
-import { HistoryScreen } from '../screens/HistoryScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { useTheme } from '../theme/useTheme';
 import { DashboardStack } from './DashboardStack';
+import { HistoryStack } from './HistoryStack';
 import type { RootTabParamList } from './types';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
@@ -50,7 +50,7 @@ export function AppNavigator() {
         })}
       >
         <Tab.Screen name="Inicio" component={DashboardStack} options={{ headerShown: false }} />
-        <Tab.Screen name="Historial" component={HistoryScreen} />
+        <Tab.Screen name="Historial" component={HistoryStack} options={{ headerShown: false }} />
         <Tab.Screen name="Perfil" component={ProfileScreen} />
       </Tab.Navigator>
     </NavigationContainer>

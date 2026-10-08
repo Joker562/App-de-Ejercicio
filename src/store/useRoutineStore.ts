@@ -2,9 +2,17 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import { DEFAULT_GYM_ROUTINES } from '../data/data';
+import { resolveExerciseId } from '../data/exercises';
 import type { GymRoutine } from '../types';
 import { createId } from '../utils/format';
-import { persistStorage } from './storage';
+import { STORAGE_VERSION, persistStorage } from './storage';
+
+/** ids de las rutinas de serie en la v0 -> plantilla equivalente. */
+const LEGACY_DEFAULT_TEMPLATES: Record<string, string> = {
+  push: 'ppl-push',
+  pull: 'ppl-pull',
+  legs: 'ppl-legs',
+};
 
 interface RoutineState {
   routines: GymRoutine[];
@@ -38,6 +46,25 @@ export const useRoutineStore = create<RoutineState>()(
       removeRoutine: (id) =>
         set((state) => ({ routines: state.routines.filter((r) => r.id !== id) })),
     }),
-    { name: 'gym-routines', storage: persistStorage },
+    {
+      name: 'gym-routines',
+      storage: persistStorage,
+      version: STORAGE_VERSION,
+      migrate: (persisted, version) => {
+        const state = persisted as Pick<RoutineState, 'routines'>;
+        if (version < 1) {
+          state.routines = state.routines.map((r) => ({
+            ...r,
+            // Las Push/Pull/Legs de serie de la v0 son las del programa PPL.
+            templateId: r.templateId ?? LEGACY_DEFAULT_TEMPLATES[r.id],
+            exercises: r.exercises.map((e) => ({
+              ...e,
+              exerciseId: resolveExerciseId(e.exerciseId),
+            })),
+          }));
+        }
+        return state;
+      },
+    },
   ),
 );

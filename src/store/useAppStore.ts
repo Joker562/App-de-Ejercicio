@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import type { TrainingMode, WeightUnit } from '../types';
-import { persistStorage } from './storage';
+import { STORAGE_VERSION, persistStorage } from './storage';
 
 interface AppState {
   mode: TrainingMode;
@@ -19,6 +19,12 @@ export const useAppStore = create<AppState>()(
       setMode: (mode) => set({ mode }),
       setUnit: (unit) => set({ unit }),
     }),
-    { name: 'app-settings', storage: persistStorage },
+    {
+      name: 'app-settings',
+      storage: persistStorage,
+      version: STORAGE_VERSION,
+      // v0 -> v1: los ajustes no cambiaron.
+      migrate: (persisted) => persisted as Pick<AppState, 'mode' | 'unit'>,
+    },
   ),
 );

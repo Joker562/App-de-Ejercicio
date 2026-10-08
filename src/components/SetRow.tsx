@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useAppStore } from '../store/useAppStore';
@@ -28,20 +28,29 @@ export function SetRow({ exerciseId, set, index, mode }: Props) {
 
   const [reps, setReps] = useState(String(set.reps || ''));
   const [weight, setWeight] = useState(set.weightKg ? String(kgToUnit(set.weightKg, unit)) : '');
+  // Mientras se escribe no se re-sincroniza desde el store, para no pisar
+  // estados intermedios como "80," o "22.5" en lbs.
+  const editing = useRef<'reps' | 'weight' | null>(null);
 
-  // Re-sincroniza si cambia la unidad o el valor guardado desde fuera.
-  useEffect(() => setReps(String(set.reps || '')), [set.reps]);
-  useEffect(
-    () => setWeight(set.weightKg ? String(kgToUnit(set.weightKg, unit)) : ''),
-    [set.weightKg, unit],
-  );
+  useEffect(() => {
+    if (editing.current !== 'reps') setReps(String(set.reps || ''));
+  }, [set.reps]);
+  useEffect(() => {
+    if (editing.current !== 'weight') {
+      setWeight(set.weightKg ? String(kgToUnit(set.weightKg, unit)) : '');
+    }
+  }, [set.weightKg, unit]);
 
-  const commitReps = () => {
-    const value = parseInt(reps, 10);
+  // Se guarda en cada pulsación: en el móvil, tocar "Terminar" o el check con
+  // el teclado abierto no quita el foco, y un guardado sólo en onBlur perdía el valor.
+  const changeReps = (text: string) => {
+    setReps(text);
+    const value = parseInt(text, 10);
     updateSet(exerciseId, set.id, { reps: Number.isFinite(value) ? value : 0 });
   };
-  const commitWeight = () => {
-    const value = parseFloat(weight.replace(',', '.'));
+  const changeWeight = (text: string) => {
+    setWeight(text);
+    const value = parseFloat(text.replace(',', '.'));
     updateSet(exerciseId, set.id, {
       weightKg: Number.isFinite(value) ? unitToKg(value, unit) : 0,
     });
@@ -68,8 +77,9 @@ export function SetRow({ exerciseId, set, index, mode }: Props) {
           <TextInput
             style={inputStyle}
             value={reps}
-            onChangeText={setReps}
-            onBlur={commitReps}
+            onChangeText={changeReps}
+            onFocus={() => (editing.current = 'reps')}
+            onBlur={() => (editing.current = null)}
             keyboardType="number-pad"
             placeholder="reps"
             placeholderTextColor={theme.textMuted}
@@ -78,8 +88,9 @@ export function SetRow({ exerciseId, set, index, mode }: Props) {
           <TextInput
             style={inputStyle}
             value={weight}
-            onChangeText={setWeight}
-            onBlur={commitWeight}
+            onChangeText={changeWeight}
+            onFocus={() => (editing.current = 'weight')}
+            onBlur={() => (editing.current = null)}
             keyboardType="decimal-pad"
             placeholder={unit}
             placeholderTextColor={theme.textMuted}

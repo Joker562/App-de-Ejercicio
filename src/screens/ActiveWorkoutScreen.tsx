@@ -12,6 +12,7 @@ import { useTheme } from '../theme/useTheme';
 import type { ClockControls } from '../utils/clock';
 import { confirmAction } from '../utils/dialogs';
 import { formatDuration } from '../utils/format';
+import { useKeepScreenOn } from '../utils/useKeepScreenOn';
 import { useNow } from '../utils/useNow';
 
 /**
@@ -31,6 +32,8 @@ export function ActiveWorkoutScreen({ navigation }: DashboardScreenProps<'Active
   const finishWorkout = useWorkoutStore((s) => s.finishWorkout);
   const cancelWorkout = useWorkoutStore((s) => s.cancelWorkout);
   const now = useNow(active !== null, 1000);
+  // Que la pantalla no se apague a mitad de un AMRAP o de un descanso.
+  useKeepScreenOn('active-workout');
 
   const controls = useMemo<ClockControls>(
     () => ({ start: startTimer, pause: pauseTimer, reset: resetTimer }),
@@ -57,9 +60,16 @@ export function ActiveWorkoutScreen({ navigation }: DashboardScreenProps<'Active
   const finish = () => {
     const nothingLogged = doneSets === 0 && active.roundsCompleted === 0;
     const doFinish = () => {
-      finishWorkout();
+      const session = finishWorkout();
       navigation.popToTop();
-      navigation.navigate('Historial');
+      if (session) {
+        // initial: false deja la lista del historial debajo para poder volver.
+        navigation.navigate('Historial', {
+          screen: 'SessionDetail',
+          params: { sessionId: session.id },
+          initial: false,
+        });
+      }
     };
     if (!nothingLogged) return doFinish();
     confirmAction({

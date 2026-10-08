@@ -1,4 +1,5 @@
 import type { TimerConfig } from '../types';
+import type { ScheduledAlert } from './notifications';
 
 export interface IntervalPhase {
   /** Clave única de la fase actual; cambia en cada transición (sirve para avisar). */
@@ -36,6 +37,56 @@ export function describeTimer(config: TimerConfig): string {
     case 'tabata':
       return `Tabata ${config.rounds} x ${config.workSec}s/${config.restSec}s`;
   }
+}
+
+export interface PhaseBoundary {
+  /** Segundo del bloque en el que empieza la fase. */
+  atSec: number;
+  title: string;
+  body: string;
+}
+
+/** Cambios de fase del bloque, para avisar con el móvil bloqueado. */
+export function phaseBoundaries(config: TimerConfig): PhaseBoundary[] {
+  const total = timerTotalSec(config);
+  const done: PhaseBoundary = { atSec: total, title: 'Tiempo', body: `${describeTimer(config)} completado.` };
+  switch (config.type) {
+    case 'amrap':
+      return [done];
+    case 'emom':
+      return [
+        ...Array.from({ length: config.minutes - 1 }, (_, i) => ({
+          atSec: (i + 1) * 60,
+          title: `Minuto ${i + 2} de ${config.minutes}`,
+          body: '¡Empieza el siguiente minuto!',
+        })),
+        done,
+      ];
+    case 'tabata': {
+      const cycle = config.workSec + config.restSec;
+      const boundaries: PhaseBoundary[] = [];
+      for (let round = 1; round < config.rounds; round++) {
+        boundaries.push({
+          atSec: (round - 1) * cycle + config.workSec,
+          title: 'Descanso',
+          body: `Ronda ${round} de ${config.rounds} terminada.`,
+        });
+        boundaries.push({
+          atSec: round * cycle,
+          title: `Ronda ${round + 1} de ${config.rounds}`,
+          body: '¡A trabajar!',
+        });
+      }
+      return [...boundaries, done];
+    }
+  }
+}
+
+/** Avisos pendientes a partir del segundo `elapsedSec` del bloque. */
+export function pendingAlerts(config: TimerConfig, elapsedSec: number): ScheduledAlert[] {
+  return phaseBoundaries(config)
+    .filter((b) => b.atSec > elapsedSec)
+    .map((b) => ({ inSec: b.atSec - elapsedSec, title: b.title, body: b.body }));
 }
 
 export function intervalPhase(config: TimerConfig, elapsedMs: number): IntervalPhase {

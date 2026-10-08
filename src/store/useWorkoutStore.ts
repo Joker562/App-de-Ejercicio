@@ -11,13 +11,32 @@ import type {
 } from '../types';
 import {
   IDLE_CLOCK,
+  clockElapsedMs,
   pauseClock,
   startClock,
   type ClockState,
 } from '../utils/clock';
 import { createId } from '../utils/format';
+import { pendingAlerts } from '../utils/intervals';
+import { cancelAlerts, scheduleAlerts } from '../utils/notifications';
+
+function scheduleRestAlert(endsAt: number) {
+  scheduleAlerts('rest', [
+    {
+      inSec: (endsAt - Date.now()) / 1000,
+      title: 'Descanso terminado',
+      body: '¡A por la siguiente serie!',
+    },
+  ]);
+}
+
+function cancelWorkoutAlerts() {
+  cancelAlerts('rest');
+  cancelAlerts('workout-timer');
+}
+import { resolveExerciseId } from '../data/exercises';
 import { useHistoryStore } from './useHistoryStore';
-import { persistStorage } from './storage';
+import { STORAGE_VERSION, persistStorage } from './storage';
 
 interface RestTimer {
   endsAt: number;
@@ -81,7 +100,8 @@ export const useWorkoutStore = create<WorkoutState>()(
         rest: null,
         clock: IDLE_CLOCK,
 
-        startMilitary: (program) =>
+        startMilitary: (program) => {
+          cancelWorkoutAlerts();
           set({
             rest: null,
             clock: IDLE_CLOCK,
@@ -102,9 +122,11 @@ export const useWorkoutStore = create<WorkoutState>()(
                 sets: Array.from({ length: m.sets }, () => newSet()),
               })),
             },
-          }),
+          });
+        },
 
-        startGym: (routine) =>
+        startGym: (routine) => {
+          cancelWorkoutAlerts();
           set({
             rest: null,
             clock: IDLE_CLOCK,
@@ -126,7 +148,8 @@ export const useWorkoutStore = create<WorkoutState>()(
                 ),
               })),
             },
-          }),
+          });
+        },
 
         toggleSet: (exerciseId, setId) => {
           const active = get().active;
@@ -169,26 +192,41 @@ export const useWorkoutStore = create<WorkoutState>()(
               : state,
           ),
 
-        startRest: (durationSec) =>
-          set({ rest: { durationSec, endsAt: Date.now() + durationSec * 1000 } }),
+        startRest: (durationSec) => {
+          const endsAt = Date.now() + durationSec * 1000;
+          set({ rest: { durationSec, endsAt } });
+          scheduleRestAlert(endsAt);
+        },
 
-        extendRest: (seconds) =>
-          set((state) =>
-            state.rest
-              ? {
-                  rest: {
-                    durationSec: state.rest.durationSec + seconds,
-                    endsAt: state.rest.endsAt + seconds * 1000,
-                  },
-                }
-              : state,
-          ),
+        extendRest: (seconds) => {
+          const rest = get().rest;
+          if (!rest) return;
+          const endsAt = rest.endsAt + seconds * 1000;
+          set({ rest: { durationSec: rest.durationSec + seconds, endsAt } });
+          scheduleRestAlert(endsAt);
+        },
 
-        skipRest: () => set({ rest: null }),
+        skipRest: () => {
+          set({ rest: null });
+          cancelAlerts('rest');
+        },
 
-        startTimer: () => set((state) => ({ clock: startClock(state.clock) })),
-        pauseTimer: () => set((state) => ({ clock: pauseClock(state.clock) })),
-        resetTimer: () => set({ clock: IDLE_CLOCK }),
+        startTimer: () => {
+          set((state) => ({ clock: startClock(state.clock) }));
+          const { active, clock } = get();
+          if (active?.timer) {
+            const elapsedSec = clockElapsedMs(clock, Date.now()) / 1000;
+            scheduleAlerts('workout-timer', pendingAlerts(active.timer, elapsedSec));
+          }
+        },
+        pauseTimer: () => {
+          set((state) => ({ clock: pauseClock(state.clock) }));
+          cancelAlerts('workout-timer');
+        },
+        resetTimer: () => {
+          set({ clock: IDLE_CLOCK });
+          cancelAlerts('workout-timer');
+        },
 
         finishWorkout: () => {
           const active = get().active;
@@ -207,13 +245,34 @@ export const useWorkoutStore = create<WorkoutState>()(
           };
           useHistoryStore.getState().addSession(session);
           set({ active: null, rest: null, clock: IDLE_CLOCK });
+          cancelWorkoutAlerts();
           return session;
         },
 
-        cancelWorkout: () => set({ active: null, rest: null, clock: IDLE_CLOCK }),
+        cancelWorkout: () => {
+          set({ active: null, rest: null, clock: IDLE_CLOCK });
+          cancelWorkoutAlerts();
+        },
       };
     },
     // Se persiste para no perder el entrenamiento si se cierra la app.
-    { name: 'active-workout', storage: persistStorage },
+    {
+      name: 'active-workout',
+      storage: persistStorage,
+      version: STORAGE_VERSION,
+      migrate: (persisted, version) => {
+        const state = persisted as Pick<WorkoutState, 'active' | 'rest' | 'clock'>;
+        if (version < 1 && state.active) {
+          state.active = {
+            ...state.active,
+            exercises: state.active.exercises.map((e) => ({
+              ...e,
+              exerciseId: e.exerciseId && resolveExerciseId(e.exerciseId),
+            })),
+          };
+        }
+        return state;
+      },
+    },
   ),
 );
