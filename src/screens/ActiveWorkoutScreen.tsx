@@ -1,5 +1,6 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { IntervalTimer } from '../components/IntervalTimer';
 import { RestTimer } from '../components/RestTimer';
@@ -109,6 +110,18 @@ export function ActiveWorkoutScreen({ navigation }: DashboardScreenProps<'Active
             <View style={styles.exerciseHeader}>
               <Text style={[styles.exerciseName, { color: theme.text }]}>{exercise.name}</Text>
               <Text style={[styles.target, { color: theme.accent }]}>{exercise.target}</Text>
+              {exercise.exerciseId ? (
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate('ExerciseDetail', { exerciseId: exercise.exerciseId! })
+                  }
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ver cómo se hace ${exercise.name}`}
+                >
+                  <Ionicons name="information-circle-outline" size={22} color={theme.accent} />
+                </Pressable>
+              ) : null}
             </View>
 
             {active.mode === 'gym' && exercise.sets.length > 0 ? (

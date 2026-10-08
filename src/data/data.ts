@@ -1,5 +1,4 @@
 import type {
-  Exercise,
   GymRoutine,
   MilitaryLevel,
   MilitaryProgram,
@@ -86,55 +85,52 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
   'Core',
 ];
 
-export const GYM_EXERCISES: Exercise[] = [
-  { id: 'press-banca', name: 'Press de banca', muscleGroup: 'Pecho', equipment: 'Barra' },
-  { id: 'press-inclinado', name: 'Press inclinado con mancuernas', muscleGroup: 'Pecho', equipment: 'Mancuernas' },
-  { id: 'peso-muerto', name: 'Peso muerto', muscleGroup: 'Espalda', equipment: 'Barra' },
-  { id: 'remo-barra', name: 'Remo con barra', muscleGroup: 'Espalda', equipment: 'Barra' },
-  { id: 'jalon-pecho', name: 'Jalón al pecho', muscleGroup: 'Espalda', equipment: 'Polea' },
-  { id: 'sentadilla', name: 'Sentadilla trasera', muscleGroup: 'Piernas', equipment: 'Barra' },
-  { id: 'prensa', name: 'Prensa de piernas', muscleGroup: 'Piernas', equipment: 'Máquina' },
-  { id: 'peso-muerto-rumano', name: 'Peso muerto rumano', muscleGroup: 'Piernas', equipment: 'Barra' },
-  { id: 'press-militar', name: 'Press militar', muscleGroup: 'Hombros', equipment: 'Barra' },
-  { id: 'elevaciones-laterales', name: 'Elevaciones laterales', muscleGroup: 'Hombros', equipment: 'Mancuernas' },
-  { id: 'curl-biceps', name: 'Curl de bíceps', muscleGroup: 'Brazos', equipment: 'Mancuernas' },
-  { id: 'extension-triceps', name: 'Extensión de tríceps en polea', muscleGroup: 'Brazos', equipment: 'Polea' },
-  { id: 'plancha', name: 'Plancha con peso', muscleGroup: 'Core', equipment: 'Disco' },
-];
+// El catálogo completo de ejercicios vive en ./exercises.ts.
+export { findExercise } from './exercises';
 
 export const DEFAULT_GYM_ROUTINES: GymRoutine[] = [
   {
     id: 'push',
     name: 'Push (Empuje)',
     exercises: [
-      { exerciseId: 'press-banca', targetSets: 4, targetReps: 8, restSec: 120 },
-      { exerciseId: 'press-militar', targetSets: 3, targetReps: 8, restSec: 90 },
-      { exerciseId: 'press-inclinado', targetSets: 3, targetReps: 10, restSec: 90 },
-      { exerciseId: 'extension-triceps', targetSets: 3, targetReps: 12, restSec: 60 },
+      { exerciseId: 'Barbell_Bench_Press_-_Medium_Grip', targetSets: 4, targetReps: 8, restSec: 120 },
+      { exerciseId: 'Standing_Military_Press', targetSets: 3, targetReps: 8, restSec: 90 },
+      { exerciseId: 'Incline_Dumbbell_Press', targetSets: 3, targetReps: 10, restSec: 90 },
+      { exerciseId: 'Side_Lateral_Raise', targetSets: 3, targetReps: 12, restSec: 60 },
+      { exerciseId: 'Triceps_Pushdown', targetSets: 3, targetReps: 12, restSec: 60 },
     ],
   },
   {
     id: 'pull',
     name: 'Pull (Tirón)',
     exercises: [
-      { exerciseId: 'peso-muerto', targetSets: 3, targetReps: 5, restSec: 180 },
-      { exerciseId: 'remo-barra', targetSets: 4, targetReps: 8, restSec: 90 },
-      { exerciseId: 'jalon-pecho', targetSets: 3, targetReps: 10, restSec: 90 },
-      { exerciseId: 'curl-biceps', targetSets: 3, targetReps: 12, restSec: 60 },
+      { exerciseId: 'Barbell_Deadlift', targetSets: 3, targetReps: 5, restSec: 180 },
+      { exerciseId: 'Pullups', targetSets: 4, targetReps: 8, restSec: 120 },
+      { exerciseId: 'Bent_Over_Barbell_Row', targetSets: 3, targetReps: 8, restSec: 90 },
+      { exerciseId: 'Face_Pull', targetSets: 3, targetReps: 15, restSec: 60 },
+      { exerciseId: 'Dumbbell_Bicep_Curl', targetSets: 3, targetReps: 12, restSec: 60 },
     ],
   },
   {
     id: 'legs',
     name: 'Legs (Pierna)',
     exercises: [
-      { exerciseId: 'sentadilla', targetSets: 4, targetReps: 6, restSec: 180 },
-      { exerciseId: 'peso-muerto-rumano', targetSets: 3, targetReps: 8, restSec: 120 },
-      { exerciseId: 'prensa', targetSets: 3, targetReps: 12, restSec: 90 },
-      { exerciseId: 'plancha', targetSets: 3, targetReps: 1, restSec: 60 },
+      { exerciseId: 'Barbell_Squat', targetSets: 4, targetReps: 6, restSec: 180 },
+      { exerciseId: 'Romanian_Deadlift', targetSets: 3, targetReps: 8, restSec: 120 },
+      { exerciseId: 'Leg_Press', targetSets: 3, targetReps: 12, restSec: 90 },
+      { exerciseId: 'Lying_Leg_Curls', targetSets: 3, targetReps: 12, restSec: 60 },
+      { exerciseId: 'Standing_Calf_Raises', targetSets: 4, targetReps: 15, restSec: 60 },
+    ],
+  },
+  {
+    id: 'full-body',
+    name: 'Full Body',
+    exercises: [
+      { exerciseId: 'Barbell_Squat', targetSets: 3, targetReps: 8, restSec: 120 },
+      { exerciseId: 'Dumbbell_Bench_Press', targetSets: 3, targetReps: 10, restSec: 90 },
+      { exerciseId: 'Seated_Cable_Rows', targetSets: 3, targetReps: 10, restSec: 90 },
+      { exerciseId: 'Dumbbell_Shoulder_Press', targetSets: 3, targetReps: 10, restSec: 90 },
+      { exerciseId: 'Plank', targetSets: 3, targetReps: 1, restSec: 60 },
     ],
   },
 ];
-
-export function findExercise(id: string): Exercise | undefined {
-  return GYM_EXERCISES.find((e) => e.id === id);
-}

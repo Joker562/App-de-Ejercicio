@@ -10,11 +10,70 @@ export type MuscleGroup =
   | 'Brazos'
   | 'Core';
 
+/** Músculos tal como vienen en free-exercise-db (las etiquetas en español están en exercises.ts). */
+export type Muscle =
+  | 'abdominals'
+  | 'abductors'
+  | 'adductors'
+  | 'biceps'
+  | 'calves'
+  | 'chest'
+  | 'forearms'
+  | 'glutes'
+  | 'hamstrings'
+  | 'lats'
+  | 'lower back'
+  | 'middle back'
+  | 'neck'
+  | 'quadriceps'
+  | 'shoulders'
+  | 'traps'
+  | 'triceps';
+
+export type Equipment =
+  | 'none'
+  | 'body only'
+  | 'barbell'
+  | 'dumbbell'
+  | 'kettlebells'
+  | 'cable'
+  | 'machine'
+  | 'bands'
+  | 'medicine ball'
+  | 'exercise ball'
+  | 'foam roll'
+  | 'e-z curl bar'
+  | 'other';
+
+export type ExerciseCategory =
+  | 'strength'
+  | 'stretching'
+  | 'plyometrics'
+  | 'strongman'
+  | 'powerlifting'
+  | 'cardio'
+  | 'olympic weightlifting';
+
+export type ExerciseLevel = 'beginner' | 'intermediate' | 'expert';
+
 export interface Exercise {
   id: string;
+  /** Nombre en español. */
   name: string;
+  /** Nombre original en inglés (también sirve para buscar). */
+  nameEn: string;
   muscleGroup: MuscleGroup;
-  equipment: string;
+  primaryMuscles: Muscle[];
+  secondaryMuscles: Muscle[];
+  equipment: Equipment;
+  category: ExerciseCategory;
+  level: ExerciseLevel;
+  force: 'push' | 'pull' | 'static' | null;
+  mechanic: 'compound' | 'isolation' | null;
+  /** Pasos en inglés, tal como vienen en la base. */
+  instructions: string[];
+  /** Rutas relativas: posición inicial y final del movimiento. */
+  images: string[];
 }
 
 export interface MilitaryLevel {

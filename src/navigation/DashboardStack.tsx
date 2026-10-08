@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { ActiveWorkoutScreen } from '../screens/ActiveWorkoutScreen';
 import { DashboardScreen } from '../screens/DashboardScreen';
+import { ExerciseDetailScreen } from '../screens/gym/ExerciseDetailScreen';
 import { ExerciseLibraryScreen } from '../screens/gym/ExerciseLibraryScreen';
 import { RoutineBuilderScreen } from '../screens/gym/RoutineBuilderScreen';
 import { RoutineListScreen } from '../screens/gym/RoutineListScreen';
@@ -37,7 +38,14 @@ export function DashboardStack() {
       <Stack.Screen
         name="ExerciseLibrary"
         component={ExerciseLibraryScreen}
-        options={{ title: 'Ejercicios' }}
+        options={({ route }) => ({
+          title: route.params?.pickForRoutine ? 'Elegir ejercicio' : 'Ejercicios',
+        })}
+      />
+      <Stack.Screen
+        name="ExerciseDetail"
+        component={ExerciseDetailScreen}
+        options={{ title: 'Cómo se hace' }}
       />
       <Stack.Screen
         name="ActiveWorkout"

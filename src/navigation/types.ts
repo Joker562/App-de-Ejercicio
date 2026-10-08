@@ -10,8 +10,16 @@ export type DashboardStackParamList = {
   ProgramList: undefined;
   Timer: undefined;
   RoutineList: undefined;
-  RoutineBuilder: { routineId?: string } | undefined;
-  ExerciseLibrary: undefined;
+  RoutineBuilder:
+    | {
+        routineId?: string;
+        /** Ejercicio elegido en la biblioteca; el nonce permite añadir el mismo dos veces. */
+        picked?: { exerciseId: string; nonce: string };
+      }
+    | undefined;
+  /** Con pickForRoutine, la biblioteca sirve para elegir ejercicios de una rutina. */
+  ExerciseLibrary: { pickForRoutine?: boolean } | undefined;
+  ExerciseDetail: { exerciseId: string; pickForRoutine?: boolean };
   ActiveWorkout: undefined;
 };
 

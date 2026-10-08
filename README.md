@@ -7,6 +7,17 @@ Aplicación de fitness con dos modos:
 
 Cada modo tiene su paleta: verde oliva/negro para militar y azul/gris oscuro para gimnasio.
 
+## Catálogo de ejercicios
+
+876 ejercicios de [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (dominio público), con nombres traducidos al español, búsqueda en español o inglés y filtros por grupo muscular, equipo y tipo. Cada ejercicio muestra una animación que alterna la foto de la posición inicial y la final, músculos trabajados e instrucciones (en inglés).
+
+- Las fotos se cargan desde GitHub la primera vez y quedan en caché en el dispositivo.
+- Para regenerar `src/data/exercises.json` (por ejemplo, tras actualizar la base o corregir una traducción en `scripts/exercise-names-es.json`):
+
+```bash
+node scripts/build-exercises.mjs
+```
+
 ## Stack
 
 - Expo SDK 57 + React Native + TypeScript

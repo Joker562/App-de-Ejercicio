@@ -2,6 +2,7 @@ import { LevelCard } from '../components/LevelCard';
 import { ModeSelector } from '../components/ModeSelector';
 import { WeeklySummary } from '../components/WeeklySummary';
 import { Button, Card, ListItem, Screen, SectionTitle } from '../components/ui';
+import { EXERCISES } from '../data/exercises';
 import type { DashboardScreenProps } from '../navigation/types';
 import { useAppStore } from '../store/useAppStore';
 import { useWorkoutStore } from '../store/useWorkoutStore';
@@ -9,6 +10,7 @@ import { useWorkoutStore } from '../store/useWorkoutStore';
 export function DashboardScreen({ navigation }: DashboardScreenProps<'Dashboard'>) {
   const mode = useAppStore((s) => s.mode);
   const active = useWorkoutStore((s) => s.active);
+  const librarySubtitle = `${EXERCISES.length} ejercicios con animación`;
 
   return (
     <Screen>
@@ -40,6 +42,11 @@ export function DashboardScreen({ navigation }: DashboardScreenProps<'Dashboard'
             subtitle="AMRAP, EMOM y Tabata libres"
             onPress={() => navigation.navigate('Timer')}
           />
+          <ListItem
+            title="Biblioteca de ejercicios"
+            subtitle={librarySubtitle}
+            onPress={() => navigation.navigate('ExerciseLibrary')}
+          />
         </>
       ) : (
         <>
@@ -51,7 +58,7 @@ export function DashboardScreen({ navigation }: DashboardScreenProps<'Dashboard'
           />
           <ListItem
             title="Biblioteca de ejercicios"
-            subtitle="Por grupo muscular"
+            subtitle={librarySubtitle}
             onPress={() => navigation.navigate('ExerciseLibrary')}
           />
         </>
