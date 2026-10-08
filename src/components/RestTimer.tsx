@@ -1,17 +1,15 @@
-import { useEffect } from 'react';
-import { StyleSheet, Text, Vibration, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useWorkoutStore } from '../store/useWorkoutStore';
 import { useTheme } from '../theme/useTheme';
 import { formatDuration } from '../utils/format';
 import { useNow } from '../utils/useNow';
-import { speak, useSpokenCountdown } from '../utils/voice';
 import { ProgressBar } from './ProgressBar';
 import { Button } from './ui';
 
 /**
  * Cuenta atrás de descanso. Se activa sola al marcar una serie de gimnasio
- * (ver useWorkoutStore.toggleSet) y vibra al terminar.
+ * (ver useWorkoutStore.toggleSet); el aviso al terminar lo da WorkoutCues.
  */
 export function RestTimer() {
   const theme = useTheme();
@@ -20,17 +18,8 @@ export function RestTimer() {
   const skipRest = useWorkoutStore((s) => s.skipRest);
   const now = useNow(rest !== null);
 
+  // Sólo muestra la cuenta atrás: el aviso al terminar lo da WorkoutCues.
   const remainingSec = rest ? Math.max(0, (rest.endsAt - now) / 1000) : 0;
-  const finished = rest !== null && remainingSec <= 0;
-
-  useSpokenCountdown(remainingSec, rest !== null, `rest-${rest?.endsAt}`);
-
-  useEffect(() => {
-    if (!finished) return;
-    Vibration.vibrate([0, 300, 150, 300]);
-    speak('¡A por la siguiente serie!');
-    skipRest();
-  }, [finished, skipRest]);
 
   if (!rest) return null;
 

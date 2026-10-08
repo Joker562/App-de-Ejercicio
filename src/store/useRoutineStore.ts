@@ -52,7 +52,7 @@ export const useRoutineStore = create<RoutineState>()(
       version: STORAGE_VERSION,
       migrate: (persisted, version) => {
         const state = persisted as Pick<RoutineState, 'routines'>;
-        if (version < 1) {
+        if (version < 1 && Array.isArray(state?.routines)) {
           state.routines = state.routines.map((r) => ({
             ...r,
             // Las Push/Pull/Legs de serie de la v0 son las del programa PPL.

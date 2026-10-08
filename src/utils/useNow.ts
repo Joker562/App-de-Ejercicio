@@ -9,9 +9,15 @@ export function useNow(running = true, intervalMs = 250): number {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     if (!running) return;
-    setNow(Date.now());
-    const id = setInterval(() => setNow(Date.now()), intervalMs);
-    return () => clearInterval(id);
+    const tick = () => setNow(Date.now());
+    // Primer tick inmediato (en un callback, no en el cuerpo del efecto) para
+    // no mostrar una hora antigua al arrancar.
+    const first = setTimeout(tick, 0);
+    const id = setInterval(tick, intervalMs);
+    return () => {
+      clearTimeout(first);
+      clearInterval(id);
+    };
   }, [running, intervalMs]);
   return now;
 }

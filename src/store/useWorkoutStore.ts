@@ -447,7 +447,7 @@ export const useWorkoutStore = create<WorkoutState>()(
       version: STORAGE_VERSION,
       migrate: (persisted, version) => {
         const state = persisted as Pick<WorkoutState, 'active' | 'rest' | 'clock'>;
-        if (version < 1 && state.active) {
+        if (version < 1 && state?.active) {
           state.active = {
             ...state.active,
             exercises: state.active.exercises.map((e) => ({

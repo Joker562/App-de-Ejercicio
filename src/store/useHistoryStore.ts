@@ -29,7 +29,7 @@ export const useHistoryStore = create<HistoryState>()(
       version: STORAGE_VERSION,
       migrate: (persisted, version) => {
         const state = persisted as Pick<HistoryState, 'sessions'>;
-        if (version < 1) {
+        if (version < 1 && Array.isArray(state?.sessions)) {
           // ids de ejercicios de la v0 -> actuales, para que los récords no se separen.
           state.sessions = state.sessions.map((s) => ({
             ...s,

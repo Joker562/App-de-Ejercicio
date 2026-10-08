@@ -1,13 +1,12 @@
-import { useEffect, useRef } from 'react';
-import { StyleSheet, Text, Vibration, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../theme/useTheme';
 import type { TimerConfig } from '../types';
 import { clockElapsedMs, type ClockControls, type ClockState } from '../utils/clock';
 import { formatDuration } from '../utils/format';
-import { describeTimer, intervalPhase, type IntervalPhase } from '../utils/intervals';
+import { describeTimer, intervalPhase } from '../utils/intervals';
+import { useIntervalCues } from '../utils/useIntervalCues';
 import { useNow } from '../utils/useNow';
-import { speak, useSpokenCountdown } from '../utils/voice';
 import { ProgressBar } from './ProgressBar';
 import { Button, Card } from './ui';
 
@@ -18,40 +17,21 @@ interface Props {
   /** Sólo AMRAP: rondas contadas y acción para sumar una. */
   rounds?: number;
   onAddRound?: () => void;
+  /** Vibración y voz desde este componente (desactivar si otro los gestiona). */
+  cues?: boolean;
 }
 
-/** Lo que se dice en voz alta al empezar cada fase. */
-function spokenPhase(config: TimerConfig, phase: IntervalPhase): string {
-  if (phase.done) return '¡Tiempo!';
-  if (config.type === 'tabata') return phase.isRest ? 'Descanso' : '¡Trabajo!';
-  if (config.type === 'emom') return phase.label;
-  return '';
-}
-
-/** Motor visual de AMRAP, EMOM y Tabata. Vibra y avisa por voz en cada cambio de fase. */
-export function IntervalTimer({ config, clock, controls, rounds, onAddRound }: Props) {
+/**
+ * Motor visual de AMRAP, EMOM y Tabata. Con `cues` (por defecto) también vibra
+ * y avisa por voz; el temporizador del entrenamiento lo desactiva porque sus
+ * avisos los da WorkoutCues desde la raíz, esté abierta la pantalla o no.
+ */
+export function IntervalTimer({ config, clock, controls, rounds, onAddRound, cues = true }: Props) {
   const theme = useTheme();
   const now = useNow(clock.running);
   const phase = intervalPhase(config, clockElapsedMs(clock, now));
 
-  const lastPhaseKey = useRef(phase.key);
-  useEffect(() => {
-    if (phase.key === lastPhaseKey.current) return;
-    lastPhaseKey.current = phase.key;
-    if (!clock.running) return;
-    Vibration.vibrate(phase.done ? [0, 400, 200, 400] : 300);
-    speak(spokenPhase(config, phase));
-    if (phase.done) controls.pause();
-  }, [phase.key, phase.done, clock.running, controls, config, phase]);
-
-  // "¡Vamos!" al arrancar desde cero.
-  const wasRunning = useRef(clock.running);
-  useEffect(() => {
-    if (clock.running && !wasRunning.current && clock.accumulatedMs === 0) speak('¡Vamos!');
-    wasRunning.current = clock.running;
-  }, [clock.running, clock.accumulatedMs]);
-
-  useSpokenCountdown(phase.remainingSec, clock.running && !phase.done, phase.key);
+  useIntervalCues(cues ? config : undefined, cues ? phase : null, clock, controls.pause);
 
   const phaseColor = phase.isRest ? theme.accent : theme.primary;
   const started = clock.running || clock.accumulatedMs > 0;

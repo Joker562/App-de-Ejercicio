@@ -86,5 +86,6 @@ src/
 
 ```bash
 npx tsc --noEmit
+npm run lint
 npx expo-doctor
 ```

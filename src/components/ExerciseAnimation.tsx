@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Animated,
   Easing,
@@ -37,7 +37,7 @@ export function ExerciseAnimation({ exercise, animated = true, style }: Props) {
   const [start, end] = exerciseImageUrls(exercise);
   const [failed, setFailed] = useState(false);
   const [paused, setPaused] = useState(false);
-  const progress = useRef(new Animated.Value(0)).current;
+  const [progress] = useState(() => new Animated.Value(0));
 
   const canAnimate = animated && !!end && !failed;
 

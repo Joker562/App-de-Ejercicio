@@ -206,7 +206,7 @@ export function ProfileScreen({ navigation }: ProfileScreenProps<'Profile'>) {
           <View style={{ flex: 1 }}>
             <Text style={{ color: theme.text, fontWeight: '600' }}>Avisos de voz</Text>
             <Text style={{ color: theme.textMuted, fontSize: 12 }}>
-              Cuenta atrás "3, 2, 1" y cambios de fase en voz alta
+              Cuenta atrás «3, 2, 1» y cambios de fase en voz alta
             </Text>
           </View>
           <Switch

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { IntervalTimer } from '../../components/IntervalTimer';
@@ -35,7 +35,7 @@ export function FitnessTestScreen({ navigation }: DashboardScreenProps<'FitnessT
   const recordFitnessTest = useWorkoutStore((s) => s.recordFitnessTest);
   useKeepScreenOn('fitness-test');
 
-  const startedAt = useRef(Date.now()).current;
+  const [startedAt] = useState(() => Date.now());
   const [pushupsText, setPushupsText] = useState('');
   const [situpsText, setSitupsText] = useState('');
   const [runText, setRunText] = useState('');

@@ -114,6 +114,8 @@ export function ActiveWorkoutScreen({ navigation }: DashboardScreenProps<'Active
             controls={controls}
             rounds={active.roundsCompleted}
             onAddRound={addRound}
+            // Los avisos de este temporizador los da WorkoutCues (en la raíz).
+            cues={false}
           />
         ) : null}
 

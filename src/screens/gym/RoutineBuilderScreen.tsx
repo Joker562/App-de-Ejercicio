@@ -39,18 +39,22 @@ export function RoutineBuilderScreen({
   const [name, setName] = useState(existing?.name ?? '');
   const [exercises, setExercises] = useState<RoutineExercise[]>(existing?.exercises ?? []);
 
-  // La biblioteca vuelve aquí con el ejercicio elegido en params.picked.
+  // La biblioteca vuelve aquí con el ejercicio elegido en params.picked. El
+  // nonce cambia en cada elección (aunque sea el mismo ejercicio), así que se
+  // añade una vez por nonce ajustando el estado durante el render.
   const picked = route.params?.picked;
-  useEffect(() => {
-    if (!picked) return;
+  const [handledNonce, setHandledNonce] = useState<string>();
+  if (picked && picked.nonce !== handledNonce) {
+    setHandledNonce(picked.nonce);
     setExercises((list) => [
       ...list,
       { exerciseId: picked.exerciseId, targetSets: 3, targetReps: 10, restSec: defaultRestSec },
     ]);
-    navigation.setParams({ picked: undefined });
-    // El nonce cambia en cada elección, aunque sea el mismo ejercicio.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [picked?.nonce]);
+  }
+  // Limpia el parámetro para que no se vuelva a aplicar al editar.
+  useEffect(() => {
+    if (picked) navigation.setParams({ picked: undefined });
+  }, [picked, navigation]);
 
   const updateField = (index: number, key: NumericField, text: string) => {
     const value = parseInt(text, 10);

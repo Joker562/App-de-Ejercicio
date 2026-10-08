@@ -114,6 +114,8 @@ export function warmupFor(working: number, bar: number, unit: WeightUnit): Warmu
   const step = LOAD_STEP[unit];
   const steps: WarmupStep[] = [];
   for (const { pct, reps } of WARMUP_SCHEME) {
+    // Sin barra (mancuernas, máquinas) no hay serie "sólo barra": se empieza en el 40%.
+    if (pct === 0 && bar <= 0) continue;
     const weight = Math.max(bar, Math.round((working * pct) / step) * step);
     if (weight >= working) break;
     if (steps.length > 0 && steps[steps.length - 1].weight === weight) continue;

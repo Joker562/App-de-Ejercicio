@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../theme/useTheme';
@@ -27,7 +28,8 @@ export function CalendarHeatmap({
   const theme = useTheme();
   const perDay = sessionsPerDay(sessions);
 
-  const today = startOfDay(Date.now());
+  // Se fija al montar: el render debe ser puro (sin Date.now()).
+  const [today] = useState(() => startOfDay(Date.now()));
   const daysSinceMonday = (new Date(today).getDay() + 6) % 7;
   const firstMonday = today - daysSinceMonday * DAY_MS - (WEEKS - 1) * 7 * DAY_MS;
   const activeDays = [...perDay.keys()].filter((d) => d >= firstMonday).length;

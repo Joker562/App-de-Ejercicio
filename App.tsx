@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { WorkoutCues } from './src/components/WorkoutCues';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { useStoresHydrated } from './src/store/useStoresHydrated';
 import { setupNotifications } from './src/utils/notifications';
@@ -26,6 +27,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <AppNavigator />
+      <WorkoutCues />
       <StatusBar style="light" />
     </SafeAreaProvider>
   );
