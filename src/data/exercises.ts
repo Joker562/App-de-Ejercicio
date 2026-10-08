@@ -4,6 +4,7 @@ import type {
   ExerciseCategory,
   ExerciseLevel,
   Muscle,
+  TrainingMode,
 } from '../types';
 import rawExercises from './exercises.json';
 
@@ -123,7 +124,12 @@ const SEARCH_INDEX = new Map(
   ]),
 );
 
+export function exercisesForMode(mode: TrainingMode): Exercise[] {
+  return EXERCISES.filter((e) => e.mode === mode);
+}
+
 export interface ExerciseFilters {
+  mode: TrainingMode;
   query: string;
   muscleGroup: Exercise['muscleGroup'] | null;
   equipment: Equipment | null;
@@ -134,6 +140,7 @@ export function filterExercises(filters: ExerciseFilters): Exercise[] {
   const words = normalizeSearch(filters.query).split(/\s+/).filter(Boolean);
   return EXERCISES.filter(
     (e) =>
+      e.mode === filters.mode &&
       (!filters.muscleGroup || e.muscleGroup === filters.muscleGroup) &&
       (!filters.equipment || e.equipment === filters.equipment) &&
       (!filters.category || e.category === filters.category) &&

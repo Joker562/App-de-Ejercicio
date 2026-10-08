@@ -40,6 +40,56 @@ const MUSCLE_TO_GROUP = {
   abdominals: 'Core',
 };
 
+/**
+ * Modo de la app al que pertenece cada ejercicio (excluyente):
+ * - militar: calistenia con peso corporal, saltos, carrera y estiramientos sin equipo;
+ * - gimnasio: todo lo que usa material de gimnasio (barras, mancuernas, poleas,
+ *   máquinas, kettlebells, bandas, balones, strongman...).
+ */
+const MILITARY_EQUIPMENT = new Set(['body only', 'none']);
+
+/** Equipo "other" que en realidad es calistenia (barra, paralelas, anillas, TRX, cajón...). */
+const MILITARY_OTHER = new Set([
+  'Band Assisted Pull-Up',
+  'Mixed Grip Chin',
+  'One Arm Chin-Up',
+  'Gironda Sternum Chins',
+  'Side To Side Chins',
+  'Rocky Pull-Ups/Pulldowns',
+  'Knee/Hip Raise On Parallel Bars',
+  'One Handed Hang',
+  'Dips - Chest Version',
+  'Ring Dips',
+  'Parallel Bar Dip',
+  'Muscle Up',
+  'Kipping Muscle Up',
+  'Rope Climb',
+  'Suspended Fallout',
+  'Suspended Reverse Crunch',
+  'Suspended Push-Up',
+  'Suspended Row',
+  'Suspended Split Squat',
+  'Inverted Row with Straps',
+  'Bodyweight Mid Row',
+  'Drop Push',
+  'Single-Leg High Box Squat',
+  'Rope Jumping',
+  'Skating',
+  'Bicycling',
+]);
+
+/** Pliometría con equipo "other" que sí es de gimnasio. */
+const GYM_OTHER_PLYOMETRICS = new Set(['Heavy Bag Thrust', 'Sledgehammer Swings']);
+
+function exerciseMode(e) {
+  if (MILITARY_EQUIPMENT.has(e.equipment ?? 'none')) return 'military';
+  if (e.equipment !== 'other') return 'gym';
+  if (MILITARY_OTHER.has(e.name)) return 'military';
+  if (e.category === 'stretching') return 'military';
+  if (e.category === 'plyometrics' && !GYM_OTHER_PLYOMETRICS.has(e.name)) return 'military';
+  return 'gym';
+}
+
 async function loadSource() {
   const localPath = process.argv[2];
   if (localPath) return JSON.parse(await readFile(localPath, 'utf8'));
@@ -66,6 +116,7 @@ const exercises = source.map((e) => {
     id: e.id,
     name: names[e.name],
     nameEn: e.name,
+    mode: exerciseMode(e),
     muscleGroup: group,
     primaryMuscles: e.primaryMuscles,
     secondaryMuscles: e.secondaryMuscles,

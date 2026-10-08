@@ -42,7 +42,19 @@ export function RoutineListScreen({ navigation }: DashboardScreenProps<'RoutineL
 
   return (
     <Screen>
-      <Button title="Crear rutina" onPress={() => navigation.navigate('RoutineBuilder')} />
+      <View style={styles.actions}>
+        <Button
+          title="Rutinas precreadas"
+          onPress={() => navigation.navigate('RoutineTemplates')}
+          style={styles.flex}
+        />
+        <Button
+          title="Crear rutina"
+          variant="secondary"
+          onPress={() => navigation.navigate('RoutineBuilder')}
+          style={styles.flex}
+        />
+      </View>
 
       {routines.length === 0 ? (
         <Text style={[styles.empty, { color: theme.textMuted }]}>

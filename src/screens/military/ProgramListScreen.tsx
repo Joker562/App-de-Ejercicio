@@ -1,4 +1,5 @@
-import { StyleSheet, Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { Button, Card, Screen } from '../../components/ui';
 import { MILITARY_LEVELS, MILITARY_PROGRAMS } from '../../data/data';
@@ -43,11 +44,31 @@ export function ProgramListScreen({ navigation }: DashboardScreenProps<'ProgramL
             <Text style={[styles.description, { color: theme.textMuted }]}>
               {program.description}
             </Text>
-            {program.movements.map((m) => (
-              <Text key={m.name} style={[styles.movement, { color: theme.text }]}>
-                {'•'} {m.name}: {m.target}
+            {program.movements.map((m) =>
+              m.exerciseId ? (
+                <Pressable
+                  key={m.name}
+                  onPress={() => navigation.navigate('ExerciseDetail', { exerciseId: m.exerciseId! })}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ver cómo se hace ${m.name}`}
+                  style={styles.movementRow}
+                >
+                  <Text style={[styles.movement, { color: theme.text }]}>
+                    {'•'} {m.name}: {m.target}
+                  </Text>
+                  <Ionicons name="information-circle-outline" size={18} color={theme.accent} />
+                </Pressable>
+              ) : (
+                <Text key={m.name} style={[styles.movement, { color: theme.text }]}>
+                  {'•'} {m.name}: {m.target}
+                </Text>
+              ),
+            )}
+            {program.movements.some((m) => m.exerciseId) ? (
+              <Text style={[styles.hint, { color: theme.textMuted }]}>
+                Toca un ejercicio para ver cómo se hace.
               </Text>
-            ))}
+            ) : null}
             <Button title="Empezar" onPress={() => start(program)} style={styles.button} />
           </Card>
         );
@@ -60,6 +81,8 @@ const styles = StyleSheet.create({
   name: { fontSize: 20, fontWeight: '800' },
   meta: { fontSize: 13, fontWeight: '700' },
   description: { fontSize: 14, lineHeight: 20 },
-  movement: { fontSize: 14 },
+  movement: { fontSize: 14, flexShrink: 1 },
+  movementRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  hint: { fontSize: 12 },
   button: { marginTop: 8 },
 });

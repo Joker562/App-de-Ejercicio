@@ -2,7 +2,8 @@ import { LevelCard } from '../components/LevelCard';
 import { ModeSelector } from '../components/ModeSelector';
 import { WeeklySummary } from '../components/WeeklySummary';
 import { Button, Card, ListItem, Screen, SectionTitle } from '../components/ui';
-import { EXERCISES } from '../data/exercises';
+import { exercisesForMode } from '../data/exercises';
+import { ROUTINE_PROGRAMS } from '../data/routineTemplates';
 import type { DashboardScreenProps } from '../navigation/types';
 import { useAppStore } from '../store/useAppStore';
 import { useWorkoutStore } from '../store/useWorkoutStore';
@@ -10,7 +11,10 @@ import { useWorkoutStore } from '../store/useWorkoutStore';
 export function DashboardScreen({ navigation }: DashboardScreenProps<'Dashboard'>) {
   const mode = useAppStore((s) => s.mode);
   const active = useWorkoutStore((s) => s.active);
-  const librarySubtitle = `${EXERCISES.length} ejercicios con animación`;
+  const librarySubtitle =
+    mode === 'military'
+      ? `${exercisesForMode('military').length} ejercicios de calistenia con animación`
+      : `${exercisesForMode('gym').length} ejercicios de gimnasio con animación`;
 
   return (
     <Screen>
@@ -51,6 +55,11 @@ export function DashboardScreen({ navigation }: DashboardScreenProps<'Dashboard'
       ) : (
         <>
           <SectionTitle>Gimnasio</SectionTitle>
+          <ListItem
+            title="Rutinas precreadas"
+            subtitle={`${ROUTINE_PROGRAMS.length} programas listos: PPL, Torso/Pierna, 5×5...`}
+            onPress={() => navigation.navigate('RoutineTemplates')}
+          />
           <ListItem
             title="Mis rutinas"
             subtitle="Empieza una rutina o crea la tuya"

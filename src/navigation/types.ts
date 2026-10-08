@@ -10,6 +10,7 @@ export type DashboardStackParamList = {
   ProgramList: undefined;
   Timer: undefined;
   RoutineList: undefined;
+  RoutineTemplates: undefined;
   RoutineBuilder:
     | {
         routineId?: string;

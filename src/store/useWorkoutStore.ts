@@ -95,6 +95,7 @@ export const useWorkoutStore = create<WorkoutState>()(
               roundsCompleted: 0,
               exercises: program.movements.map((m) => ({
                 id: createId(),
+                exerciseId: m.exerciseId,
                 name: m.name,
                 target: m.target,
                 restSec: 0,

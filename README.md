@@ -9,9 +9,11 @@ Cada modo tiene su paleta: verde oliva/negro para militar y azul/gris oscuro par
 
 ## Catálogo de ejercicios
 
-876 ejercicios de [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (dominio público), con nombres traducidos al español, búsqueda en español o inglés y filtros por grupo muscular, equipo y tipo. Cada ejercicio muestra una animación que alterna la foto de la posición inicial y la final, músculos trabajados e instrucciones (en inglés).
+876 ejercicios de [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (dominio público), con nombres traducidos al español, búsqueda en español o inglés y filtros por grupo muscular, equipo y tipo. Están separados por modo: 256 de calistenia militar (peso corporal, barra y paralelas, saltos, estiramientos) y 620 de gimnasio (barras, mancuernas, poleas, máquinas, kettlebells...). El reparto se decide en `scripts/build-exercises.mjs`. Cada ejercicio muestra una animación que alterna la foto de la posición inicial y la final, músculos trabajados e instrucciones (en inglés).
 
 - Las fotos se cargan desde GitHub la primera vez y quedan en caché en el dispositivo.
+- **Rutinas precreadas** (`src/data/routineTemplates.ts`): 10 programas de gimnasio (Full Body, PPL, Torso/Pierna, 5×5, split por grupo, glúteos, mancuernas, kettlebell, máquinas y core). Se pueden empezar al momento o guardar en Mis rutinas, de una en una o el programa completo.
+- **Programas militares** (`src/data/data.ts`): 10 programas de calistenia; sus movimientos enlazan con la animación del catálogo.
 - Para regenerar `src/data/exercises.json` (por ejemplo, tras actualizar la base o corregir una traducción en `scripts/exercise-names-es.json`):
 
 ```bash

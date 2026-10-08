@@ -9,26 +9,42 @@ import {
   CATEGORY_LABELS,
   EQUIPMENT_LABELS,
   MUSCLE_LABELS,
+  exercisesForMode,
   filterExercises,
 } from '../../data/exercises';
 import type { DashboardScreenProps } from '../../navigation/types';
+import { useAppStore } from '../../store/useAppStore';
 import { useTheme } from '../../theme/useTheme';
-import type { Equipment, Exercise, ExerciseCategory, MuscleGroup } from '../../types';
+import type {
+  Equipment,
+  Exercise,
+  ExerciseCategory,
+  MuscleGroup,
+  TrainingMode,
+} from '../../types';
 import { createId } from '../../utils/format';
 
 const MUSCLE_OPTIONS = MUSCLE_GROUPS.map((g) => ({ value: g, label: g }));
-const EQUIPMENT_OPTIONS = (Object.keys(EQUIPMENT_LABELS) as Equipment[]).map((value) => ({
-  value,
-  label: EQUIPMENT_LABELS[value],
-}));
-const CATEGORY_OPTIONS = (Object.keys(CATEGORY_LABELS) as ExerciseCategory[]).map((value) => ({
-  value,
-  label: CATEGORY_LABELS[value],
-}));
+
+/** Sólo las opciones que existen en los ejercicios de ese modo. */
+function optionsForMode(mode: TrainingMode) {
+  const exercises = exercisesForMode(mode);
+  const equipment = new Set(exercises.map((e) => e.equipment));
+  const categories = new Set(exercises.map((e) => e.category));
+  return {
+    equipment: (Object.keys(EQUIPMENT_LABELS) as Equipment[])
+      .filter((value) => equipment.has(value))
+      .map((value) => ({ value, label: EQUIPMENT_LABELS[value] })),
+    categories: (Object.keys(CATEGORY_LABELS) as ExerciseCategory[])
+      .filter((value) => categories.has(value))
+      .map((value) => ({ value, label: CATEGORY_LABELS[value] })),
+  };
+}
 
 /**
- * Catálogo completo con búsqueda y filtros. Con pickForRoutine, cada fila
- * tiene un botón para añadir el ejercicio a la rutina que se está creando.
+ * Catálogo del modo activo (militar o gimnasio) con búsqueda y filtros. Con
+ * pickForRoutine, cada fila tiene un botón para añadir el ejercicio a la
+ * rutina de gimnasio que se está creando.
  */
 export function ExerciseLibraryScreen({
   navigation,
@@ -36,6 +52,10 @@ export function ExerciseLibraryScreen({
 }: DashboardScreenProps<'ExerciseLibrary'>) {
   const theme = useTheme();
   const pickForRoutine = route.params?.pickForRoutine ?? false;
+  const appMode = useAppStore((s) => s.mode);
+  // Las rutinas personalizadas son de gimnasio.
+  const mode: TrainingMode = pickForRoutine ? 'gym' : appMode;
+  const options = useMemo(() => optionsForMode(mode), [mode]);
 
   const [query, setQuery] = useState('');
   const [muscleGroup, setMuscleGroup] = useState<MuscleGroup | null>(null);
@@ -43,8 +63,8 @@ export function ExerciseLibraryScreen({
   const [category, setCategory] = useState<ExerciseCategory | null>(null);
 
   const results = useMemo(
-    () => filterExercises({ query, muscleGroup, equipment, category }),
-    [query, muscleGroup, equipment, category],
+    () => filterExercises({ mode, query, muscleGroup, equipment, category }),
+    [mode, query, muscleGroup, equipment, category],
   );
 
   const pick = (exercise: Exercise) =>
@@ -113,19 +133,20 @@ export function ExerciseLibraryScreen({
         </View>
         <FilterChips options={MUSCLE_OPTIONS} selected={muscleGroup} onChange={setMuscleGroup} />
         <FilterChips
-          options={EQUIPMENT_OPTIONS}
+          options={options.equipment}
           selected={equipment}
           onChange={setEquipment}
           allLabel="Todo el equipo"
         />
         <FilterChips
-          options={CATEGORY_OPTIONS}
+          options={options.categories}
           selected={category}
           onChange={setCategory}
           allLabel="Todos los tipos"
         />
         <Text style={[styles.count, { color: theme.textMuted }]}>
           {results.length} {results.length === 1 ? 'ejercicio' : 'ejercicios'}
+          {mode === 'military' ? ' de calistenia militar' : ' de gimnasio'}
           {pickForRoutine ? ' · toca + para añadir' : ''}
         </Text>
       </View>

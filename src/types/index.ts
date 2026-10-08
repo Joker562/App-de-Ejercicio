@@ -62,6 +62,8 @@ export interface Exercise {
   name: string;
   /** Nombre original en inglés (también sirve para buscar). */
   nameEn: string;
+  /** Militar = calistenia sin material de gimnasio; gimnasio = el resto. */
+  mode: TrainingMode;
   muscleGroup: MuscleGroup;
   primaryMuscles: Muscle[];
   secondaryMuscles: Muscle[];
@@ -96,6 +98,8 @@ export interface MilitaryMovement {
   target: string;
   /** Checkboxes a marcar. 0 en AMRAP, donde se cuentan rondas. */
   sets: number;
+  /** Ejercicio del catálogo, para ver su animación. */
+  exerciseId?: string;
 }
 
 export interface MilitaryProgram {
@@ -118,6 +122,8 @@ export interface GymRoutine {
   id: string;
   name: string;
   exercises: RoutineExercise[];
+  /** Si se añadió desde una rutina precreada, su id (evita duplicarla). */
+  templateId?: string;
 }
 
 export interface WorkoutSet {
