@@ -5,7 +5,10 @@ import type {
 } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-export type PickTarget = 'routine' | 'workout';
+import type { TrainingMode } from '../types';
+
+/** routine: rutina de gimnasio; military-routine: rutina militar; workout: sesión en curso. */
+export type PickTarget = 'routine' | 'military-routine' | 'workout';
 
 export type DashboardStackParamList = {
   Dashboard: undefined;
@@ -13,9 +16,13 @@ export type DashboardStackParamList = {
   Timer: undefined;
   RoutineList: undefined;
   RoutineTemplates: undefined;
+  FitnessTest: undefined;
+  Progressions: undefined;
   RoutineBuilder:
     | {
         routineId?: string;
+        /** Rutina nueva militar (las existentes llevan su modo guardado). */
+        mode?: TrainingMode;
         /** Ejercicio elegido en la biblioteca; el nonce permite añadir el mismo dos veces. */
         picked?: { exerciseId: string; nonce: string };
       }

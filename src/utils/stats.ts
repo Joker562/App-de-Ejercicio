@@ -1,5 +1,4 @@
-import { MILITARY_LEVELS } from '../data/data';
-import type { MilitaryLevel, Session, TrainingMode } from '../types';
+import type { Session, TrainingMode } from '../types';
 import { estimateOneRepMax } from './oneRepMax';
 import { isWorkingSet } from './progression';
 
@@ -83,28 +82,6 @@ export function weeklySummary(
     completedSets: thisWeek.reduce((sum, s) => sum + completedSetCount(s), 0),
     activeDays,
   };
-}
-
-export interface LevelProgress {
-  current: MilitaryLevel;
-  next?: MilitaryLevel;
-  completed: number;
-  /** 0..1 hacia el siguiente nivel. */
-  progress: number;
-}
-
-export function militaryLevelProgress(sessions: Session[]): LevelProgress {
-  const completed = sessions.filter((s) => s.mode === 'military').length;
-  let index = 0;
-  MILITARY_LEVELS.forEach((level, i) => {
-    if (completed >= level.minSessions) index = i;
-  });
-  const current = MILITARY_LEVELS[index];
-  const next = MILITARY_LEVELS[index + 1];
-  const progress = next
-    ? (completed - current.minSessions) / (next.minSessions - current.minSessions)
-    : 1;
-  return { current, next, completed, progress };
 }
 
 export interface ExerciseRecord {

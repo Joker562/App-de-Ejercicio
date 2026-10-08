@@ -5,8 +5,9 @@ import { useTheme } from '../theme/useTheme';
 import type { TimerConfig } from '../types';
 import { clockElapsedMs, type ClockControls, type ClockState } from '../utils/clock';
 import { formatDuration } from '../utils/format';
-import { describeTimer, intervalPhase } from '../utils/intervals';
+import { describeTimer, intervalPhase, type IntervalPhase } from '../utils/intervals';
 import { useNow } from '../utils/useNow';
+import { speak, useSpokenCountdown } from '../utils/voice';
 import { ProgressBar } from './ProgressBar';
 import { Button, Card } from './ui';
 
@@ -19,7 +20,15 @@ interface Props {
   onAddRound?: () => void;
 }
 
-/** Motor visual de AMRAP, EMOM y Tabata. Vibra en cada cambio de fase. */
+/** Lo que se dice en voz alta al empezar cada fase. */
+function spokenPhase(config: TimerConfig, phase: IntervalPhase): string {
+  if (phase.done) return '¡Tiempo!';
+  if (config.type === 'tabata') return phase.isRest ? 'Descanso' : '¡Trabajo!';
+  if (config.type === 'emom') return phase.label;
+  return '';
+}
+
+/** Motor visual de AMRAP, EMOM y Tabata. Vibra y avisa por voz en cada cambio de fase. */
 export function IntervalTimer({ config, clock, controls, rounds, onAddRound }: Props) {
   const theme = useTheme();
   const now = useNow(clock.running);
@@ -31,8 +40,18 @@ export function IntervalTimer({ config, clock, controls, rounds, onAddRound }: P
     lastPhaseKey.current = phase.key;
     if (!clock.running) return;
     Vibration.vibrate(phase.done ? [0, 400, 200, 400] : 300);
+    speak(spokenPhase(config, phase));
     if (phase.done) controls.pause();
-  }, [phase.key, phase.done, clock.running, controls]);
+  }, [phase.key, phase.done, clock.running, controls, config, phase]);
+
+  // "¡Vamos!" al arrancar desde cero.
+  const wasRunning = useRef(clock.running);
+  useEffect(() => {
+    if (clock.running && !wasRunning.current && clock.accumulatedMs === 0) speak('¡Vamos!');
+    wasRunning.current = clock.running;
+  }, [clock.running, clock.accumulatedMs]);
+
+  useSpokenCountdown(phase.remainingSec, clock.running && !phase.done, phase.key);
 
   const phaseColor = phase.isRest ? theme.accent : theme.primary;
   const started = clock.running || clock.accumulatedMs > 0;

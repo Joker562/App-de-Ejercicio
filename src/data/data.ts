@@ -7,12 +7,12 @@ import type {
 import { ROUTINE_PROGRAMS } from './routineTemplates';
 
 export const MILITARY_LEVELS: MilitaryLevel[] = [
-  { id: 'recluta', name: 'Recluta', minSessions: 0 },
-  { id: 'soldado', name: 'Soldado', minSessions: 5 },
-  { id: 'cabo', name: 'Cabo', minSessions: 15 },
-  { id: 'sargento', name: 'Sargento', minSessions: 30 },
-  { id: 'ranger', name: 'Ranger', minSessions: 50 },
-  { id: 'fuerzas-especiales', name: 'Fuerzas Especiales', minSessions: 80 },
+  { id: 'recluta', name: 'Recluta', minPoints: 0 },
+  { id: 'soldado', name: 'Soldado', minPoints: 100 },
+  { id: 'cabo', name: 'Cabo', minPoints: 300 },
+  { id: 'sargento', name: 'Sargento', minPoints: 700 },
+  { id: 'ranger', name: 'Ranger', minPoints: 1200 },
+  { id: 'fuerzas-especiales', name: 'Fuerzas Especiales', minPoints: 2000 },
 ];
 
 export const MILITARY_PROGRAMS: MilitaryProgram[] = [
@@ -22,10 +22,12 @@ export const MILITARY_PROGRAMS: MilitaryProgram[] = [
     description:
       'Basada en la APFT del ejército: máximas flexiones y abdominales en 2 minutos y carrera de 3.2 km.',
     levelId: 'recluta',
+    points: 30,
+    fitnessTest: true,
     movements: [
       { name: 'Flexiones', target: 'Máx. en 2 min', sets: 1, exerciseId: 'Pushups' },
       { name: 'Abdominales', target: 'Máx. en 2 min', sets: 1, exerciseId: 'Sit-Up' },
-      { name: 'Carrera', target: '3.2 km', sets: 1 },
+      { name: 'Carrera', target: '3.2 km', sets: 1, measure: 'time' },
     ],
   },
   {
@@ -34,6 +36,8 @@ export const MILITARY_PROGRAMS: MilitaryProgram[] = [
     description:
       'Tantas rondas como sea posible en 20 minutos. Clásico de resistencia con peso corporal.',
     levelId: 'soldado',
+    points: 25,
+    targetRounds: 15,
     movements: [
       { name: 'Dominadas', target: '5 reps', sets: 0, exerciseId: 'Pullups' },
       { name: 'Flexiones', target: '10 reps', sets: 0, exerciseId: 'Pushups' },
@@ -47,6 +51,7 @@ export const MILITARY_PROGRAMS: MilitaryProgram[] = [
     description:
       'Al inicio de cada minuto: dominadas y flexiones. Descansa el resto del minuto.',
     levelId: 'cabo',
+    points: 20,
     movements: [
       { name: 'Dominadas', target: '5 reps por minuto', sets: 12, exerciseId: 'Pullups' },
       { name: 'Flexiones', target: '10 reps por minuto', sets: 12, exerciseId: 'Pushups' },
@@ -58,6 +63,7 @@ export const MILITARY_PROGRAMS: MilitaryProgram[] = [
     name: 'Tabata Burpees',
     description: '8 rondas de 20 s de trabajo máximo y 10 s de descanso.',
     levelId: 'recluta',
+    points: 10,
     movements: [{ name: 'Burpees', target: '20 s al máximo', sets: 8 }],
     timer: { type: 'tabata', workSec: 20, restSec: 10, rounds: 8 },
   },
@@ -67,12 +73,14 @@ export const MILITARY_PROGRAMS: MilitaryProgram[] = [
     description:
       'Homenaje militar: 1.6 km de carrera, 100 dominadas, 200 flexiones, 300 sentadillas y 1.6 km de carrera, particionado en 20 rondas de 5/10/15.',
     levelId: 'ranger',
+    points: 60,
+    forTime: true,
     movements: [
-      { name: 'Carrera inicial', target: '1.6 km', sets: 1 },
+      { name: 'Carrera inicial', target: '1.6 km', sets: 1, measure: 'time' },
       { name: 'Dominadas', target: '5 reps por ronda', sets: 20, exerciseId: 'Pullups' },
       { name: 'Flexiones', target: '10 reps por ronda', sets: 20, exerciseId: 'Pushups' },
       { name: 'Sentadillas', target: '15 reps por ronda', sets: 20, exerciseId: 'Bodyweight_Squat' },
-      { name: 'Carrera final', target: '1.6 km', sets: 1 },
+      { name: 'Carrera final', target: '1.6 km', sets: 1, measure: 'time' },
     ],
   },
   {
@@ -81,12 +89,13 @@ export const MILITARY_PROGRAMS: MilitaryProgram[] = [
     description:
       'Los cinco básicos con peso corporal para construir la base. Descansa 60-90 s entre series.',
     levelId: 'recluta',
+    points: 10,
     movements: [
       { name: 'Flexiones', target: '10-15 reps', sets: 3, exerciseId: 'Pushups' },
       { name: 'Sentadillas', target: '20 reps', sets: 3, exerciseId: 'Bodyweight_Squat' },
       { name: 'Remo invertido', target: '8-12 reps', sets: 3, exerciseId: 'Inverted_Row' },
       { name: 'Abdominales', target: '15 reps', sets: 3, exerciseId: 'Sit-Up' },
-      { name: 'Plancha', target: '30-60 s', sets: 3, exerciseId: 'Plank' },
+      { name: 'Plancha', target: '30-60 s', sets: 3, exerciseId: 'Plank', measure: 'time' },
     ],
   },
   {
@@ -94,6 +103,7 @@ export const MILITARY_PROGRAMS: MilitaryProgram[] = [
     name: 'Movilidad y estiramientos',
     description: 'Sesión suave para recuperar entre días duros o como vuelta a la calma.',
     levelId: 'recluta',
+    points: 5,
     movements: [
       { name: 'El mejor estiramiento del mundo', target: '5 por lado', sets: 2, exerciseId: 'Worlds_Greatest_Stretch' },
       { name: 'Estiramiento del gato', target: '30 s', sets: 2, exerciseId: 'Cat_Stretch' },
@@ -107,6 +117,8 @@ export const MILITARY_PROGRAMS: MilitaryProgram[] = [
     name: 'Circuito de resistencia (AMRAP 15)',
     description: 'Tantas rondas como puedas en 15 minutos, sin material.',
     levelId: 'soldado',
+    points: 15,
+    targetRounds: 10,
     movements: [
       { name: 'Escaladores', target: '20 reps', sets: 0, exerciseId: 'Mountain_Climbers' },
       { name: 'Flexiones', target: '15 reps', sets: 0, exerciseId: 'Pushups' },
@@ -120,6 +132,7 @@ export const MILITARY_PROGRAMS: MilitaryProgram[] = [
     name: 'Pliometría de combate',
     description: 'Potencia y explosividad. Máxima intensidad en cada repetición, descanso completo.',
     levelId: 'cabo',
+    points: 20,
     movements: [
       { name: 'Sentadilla con salto', target: '10 reps', sets: 4, exerciseId: 'Freehand_Jump_Squat' },
       { name: 'Salto con rodillas al pecho', target: '8 reps', sets: 4, exerciseId: 'Knee_Tuck_Jump' },
@@ -132,6 +145,7 @@ export const MILITARY_PROGRAMS: MilitaryProgram[] = [
     name: 'Barra y paralelas',
     description: 'Fuerza del tren superior con tu peso: dominadas, fondos y core colgado.',
     levelId: 'sargento',
+    points: 25,
     movements: [
       { name: 'Dominadas', target: 'Máx. reps', sets: 5, exerciseId: 'Pullups' },
       { name: 'Fondos en paralelas', target: 'Máx. reps', sets: 5, exerciseId: 'Parallel_Bar_Dip' },

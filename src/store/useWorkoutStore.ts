@@ -5,6 +5,7 @@ import { findExercise } from '../data/data';
 import { resolveExerciseId } from '../data/exercises';
 import type {
   ActiveWorkout,
+  FitnessTestResult,
   GymRoutine,
   MilitaryProgram,
   RoutineExercise,
@@ -55,12 +56,16 @@ interface WorkoutState {
   clock: ClockState;
 
   startMilitary: (program: MilitaryProgram) => void;
+  /** Rutina militar personalizada: se convierte en un programa sin temporizador. */
+  startMilitaryRoutine: (routine: GymRoutine) => void;
   startGym: (routine: GymRoutine) => void;
+  /** Guarda directamente en el historial el resultado de la prueba física. */
+  recordFitnessTest: (result: FitnessTestResult, startedAt: number) => Session;
   toggleSet: (exerciseId: string, setId: string) => void;
   updateSet: (
     exerciseId: string,
     setId: string,
-    patch: Partial<Pick<WorkoutSet, 'reps' | 'weightKg' | 'type' | 'rpe'>>,
+    patch: Partial<Pick<WorkoutSet, 'reps' | 'weightKg' | 'type' | 'rpe' | 'durationSec'>>,
   ) => void;
   addSet: (exerciseId: string) => void;
   removeSet: (exerciseId: string, setId: string) => void;
@@ -155,10 +160,62 @@ export const useWorkoutStore = create<WorkoutState>()(
                 name: m.name,
                 target: m.target,
                 restSec: 0,
+                measure: m.measure ?? 'reps',
                 sets: Array.from({ length: m.sets }, () => newSet()),
               })),
             },
           });
+        },
+
+        startMilitaryRoutine: (routine) =>
+          get().startMilitary({
+            id: routine.id,
+            name: routine.name,
+            description: '',
+            levelId: 'recluta',
+            points: 0, // las rutinas propias puntúan por serie (ver sessionPoints)
+            movements: routine.exercises.map((re) => ({
+              name: findExercise(re.exerciseId)?.name ?? re.exerciseId,
+              target: `${re.targetReps} reps`,
+              sets: re.targetSets,
+              exerciseId: re.exerciseId,
+            })),
+          }),
+
+        recordFitnessTest: (result, startedAt) => {
+          const endedAt = Date.now();
+          const single = (
+            name: string,
+            exerciseId: string | undefined,
+            patch: Partial<WorkoutSet>,
+            measure: 'reps' | 'time',
+          ): WorkoutExercise => ({
+            id: createId(),
+            exerciseId,
+            name,
+            target: measure === 'time' ? '3.2 km' : 'Máx. en 2 min',
+            restSec: 0,
+            measure,
+            sets: [{ ...newSet(), completed: true, ...patch }],
+          });
+          const session: Session = {
+            id: createId(),
+            mode: 'military',
+            title: 'Prueba de Condición Física',
+            sourceId: 'apft',
+            startedAt,
+            endedAt,
+            durationSec: Math.round((endedAt - startedAt) / 1000),
+            roundsCompleted: 0,
+            exercises: [
+              single('Flexiones', 'Pushups', { reps: result.pushups }, 'reps'),
+              single('Abdominales', 'Sit-Up', { reps: result.situps }, 'reps'),
+              single('Carrera', undefined, { durationSec: result.runSec }, 'time'),
+            ],
+            fitnessTest: result,
+          };
+          useHistoryStore.getState().addSession(session);
+          return session;
         },
 
         startGym: (routine) => {

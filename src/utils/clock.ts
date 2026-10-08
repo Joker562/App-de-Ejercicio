@@ -16,7 +16,9 @@ export interface ClockControls {
 export const IDLE_CLOCK: ClockState = { running: false, startedAt: null, accumulatedMs: 0 };
 
 export function clockElapsedMs(clock: ClockState, now: number): number {
-  return clock.accumulatedMs + (clock.running && clock.startedAt ? now - clock.startedAt : 0);
+  // `now` puede ser de un render anterior al arranque: nunca tiempo negativo.
+  const running = clock.running && clock.startedAt ? Math.max(0, now - clock.startedAt) : 0;
+  return clock.accumulatedMs + running;
 }
 
 export function startClock(clock: ClockState): ClockState {

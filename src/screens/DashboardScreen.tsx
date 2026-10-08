@@ -42,6 +42,16 @@ export function DashboardScreen({ navigation }: DashboardScreenProps<'Dashboard'
             onPress={() => navigation.navigate('ProgramList')}
           />
           <ListItem
+            title="Prueba física"
+            subtitle="Flexiones, abdominales y 3.2 km con nota sobre 300"
+            onPress={() => navigation.navigate('FitnessTest')}
+          />
+          <ListItem
+            title="Progresiones"
+            subtitle="Escaleras de calistenia paso a paso"
+            onPress={() => navigation.navigate('Progressions')}
+          />
+          <ListItem
             title="Temporizadores"
             subtitle="AMRAP, EMOM y Tabata libres"
             onPress={() => navigation.navigate('Timer')}

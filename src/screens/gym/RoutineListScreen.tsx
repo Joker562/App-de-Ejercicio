@@ -11,7 +11,9 @@ import { confirmAction } from '../../utils/dialogs';
 
 export function RoutineListScreen({ navigation }: DashboardScreenProps<'RoutineList'>) {
   const theme = useTheme();
-  const routines = useRoutineStore((s) => s.routines);
+  const allRoutines = useRoutineStore((s) => s.routines);
+  // Las rutinas militares se gestionan desde Programas (modo militar).
+  const routines = allRoutines.filter((r) => r.mode !== 'military');
   const removeRoutine = useRoutineStore((s) => s.removeRoutine);
   const active = useWorkoutStore((s) => s.active);
   const startGym = useWorkoutStore((s) => s.startGym);

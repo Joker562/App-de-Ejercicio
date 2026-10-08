@@ -7,7 +7,7 @@ import { useWorkoutStore } from '../store/useWorkoutStore';
 import type { Palette } from '../theme/palettes';
 import { useTheme } from '../theme/useTheme';
 import type { PreviousSet, SetType, TrainingMode, WorkoutSet } from '../types';
-import { kgToUnit, unitToKg } from '../utils/format';
+import { formatDuration, kgToUnit, parseDuration, unitToKg } from '../utils/format';
 
 interface Props {
   exerciseId: string;
@@ -17,6 +17,8 @@ interface Props {
   mode: TrainingMode;
   /** Serie equivalente de la última sesión, para la columna "Anterior". */
   previous?: PreviousSet;
+  /** Militar: qué se registra además del check. */
+  measure?: 'reps' | 'time';
 }
 
 export const SET_TYPE_LABELS: Record<SetType, string> = {
@@ -38,7 +40,7 @@ export function setTypeColor(type: SetType, theme: Palette): string {
  * la serie anterior, reps y peso (en la unidad del usuario). Tocar el número
  * abre el tipo de serie y el RPE.
  */
-export function SetRow({ exerciseId, set, label, mode, previous }: Props) {
+export function SetRow({ exerciseId, set, label, mode, previous, measure = 'reps' }: Props) {
   const theme = useTheme();
   const unit = useAppStore((s) => s.unit);
   const toggleSet = useWorkoutStore((s) => s.toggleSet);
@@ -76,6 +78,14 @@ export function SetRow({ exerciseId, set, label, mode, previous }: Props) {
     });
   };
 
+  // Militar con medida de tiempo (carrera, plancha): "mm:ss" o segundos.
+  const [timeText, setTimeText] = useState(set.durationSec ? formatDuration(set.durationSec) : '');
+  const changeTime = (text: string) => {
+    setTimeText(text);
+    const seconds = parseDuration(text);
+    updateSet(exerciseId, set.id, { durationSec: seconds ?? undefined });
+  };
+
   const type = set.type ?? 'normal';
   const typeColor = setTypeColor(type, theme);
   const inputStyle = [
@@ -106,6 +116,29 @@ export function SetRow({ exerciseId, set, label, mode, previous }: Props) {
     return (
       <View style={[styles.row, set.completed && { backgroundColor: theme.surfaceAlt }]}>
         <Text style={[styles.militaryLabel, { color: theme.textMuted }]}>Serie {label}</Text>
+        {measure === 'time' ? (
+          <TextInput
+            style={[inputStyle, styles.militaryInput]}
+            value={timeText}
+            onChangeText={changeTime}
+            keyboardType="numbers-and-punctuation"
+            placeholder="mm:ss"
+            placeholderTextColor={theme.textMuted}
+            accessibilityLabel={`Tiempo serie ${label}`}
+          />
+        ) : (
+          <TextInput
+            style={[inputStyle, styles.militaryInput]}
+            value={reps}
+            onChangeText={changeReps}
+            onFocus={() => (editing.current = 'reps')}
+            onBlur={() => (editing.current = null)}
+            keyboardType="number-pad"
+            placeholder="reps"
+            placeholderTextColor={theme.textMuted}
+            accessibilityLabel={`Repeticiones serie ${label}`}
+          />
+        )}
         {checkbox}
       </View>
     );
@@ -233,6 +266,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   militaryLabel: { flex: 1, fontWeight: '700' },
+  militaryInput: { flex: 0, width: 84 },
   badge: {
     width: 28,
     height: 28,

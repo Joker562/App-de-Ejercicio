@@ -19,7 +19,7 @@ export function usePickExercise(pickFor: PickTarget | undefined) {
   if (!pickFor) return null;
 
   return (exerciseId: string) => {
-    if (pickFor === 'routine') {
+    if (pickFor === 'routine' || pickFor === 'military-routine') {
       navigation.popTo(
         'RoutineBuilder',
         { picked: { exerciseId, nonce: createId() } },
@@ -36,7 +36,8 @@ export function usePickExercise(pickFor: PickTarget | undefined) {
 export function usePickMode(pickFor: PickTarget | undefined): TrainingMode {
   const appMode = useAppStore((s) => s.mode);
   const workoutMode = useWorkoutStore((s) => s.active?.mode);
-  if (pickFor === 'routine') return 'gym'; // las rutinas personalizadas son de gimnasio
+  if (pickFor === 'routine') return 'gym';
+  if (pickFor === 'military-routine') return 'military';
   if (pickFor === 'workout') return workoutMode ?? appMode;
   return appMode;
 }

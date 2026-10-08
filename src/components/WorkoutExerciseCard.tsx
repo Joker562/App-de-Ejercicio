@@ -215,6 +215,7 @@ export function WorkoutExerciseCard({
             set={set}
             label={label}
             mode={mode}
+            measure={exercise.measure}
             previous={working ? exercise.previous?.[workingIndex - 1] : undefined}
           />
         );

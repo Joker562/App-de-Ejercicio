@@ -81,9 +81,11 @@ export interface Exercise {
 export interface MilitaryLevel {
   id: string;
   name: string;
-  /** Sesiones militares completadas necesarias para alcanzar el nivel. */
-  minSessions: number;
+  /** Puntos militares acumulados necesarios para alcanzar el rango. */
+  minPoints: number;
 }
+
+export type Sex = 'male' | 'female';
 
 export type TimerConfig =
   | { type: 'amrap'; durationSec: number }
@@ -100,15 +102,26 @@ export interface MilitaryMovement {
   sets: number;
   /** Ejercicio del catálogo, para ver su animación. */
   exerciseId?: string;
+  /** Qué se registra en cada serie además del check. Por defecto, reps. */
+  measure?: 'reps' | 'time';
 }
 
 export interface MilitaryProgram {
   id: string;
   name: string;
   description: string;
+  /** Rango mínimo para desbloquearlo. */
   levelId: string;
   movements: MilitaryMovement[];
   timer?: TimerConfig;
+  /** Puntos de rango por completarlo entero (se prorratea si se hace a medias). */
+  points: number;
+  /** AMRAP: rondas que cuentan como "completado" para los puntos. */
+  targetRounds?: number;
+  /** Se compite por tiempo (p. ej. Murph): la marca es el tiempo más bajo. */
+  forTime?: boolean;
+  /** Abre la pantalla de la prueba física en lugar del entrenamiento genérico. */
+  fitnessTest?: boolean;
 }
 
 export interface RoutineExercise {
@@ -126,6 +139,8 @@ export interface GymRoutine {
   exercises: RoutineExercise[];
   /** Si se añadió desde una rutina precreada, su id (evita duplicarla). */
   templateId?: string;
+  /** Rutina personalizada de calistenia militar. Sin definir = gimnasio. */
+  mode?: TrainingMode;
 }
 
 /**
@@ -144,6 +159,8 @@ export interface WorkoutSet {
   type?: SetType;
   /** Esfuerzo percibido, 6-10. */
   rpe?: number;
+  /** Tiempo registrado (p. ej. carrera), en segundos. */
+  durationSec?: number;
 }
 
 /** Serie de la sesión anterior del mismo ejercicio, para "la última vez". */
@@ -165,6 +182,19 @@ export interface WorkoutExercise {
   previous?: PreviousSet[];
   notes?: string;
   supersetGroup?: string;
+  /** Militar: qué se registra por serie. */
+  measure?: 'reps' | 'time';
+}
+
+/** Resultado de la prueba física (estimación basada en la APFT). */
+export interface FitnessTestResult {
+  pushups: number;
+  situps: number;
+  runSec: number;
+  age: number;
+  sex: Sex;
+  scores: { pushups: number; situps: number; run: number; total: number };
+  passed: boolean;
 }
 
 export interface ActiveWorkout {
@@ -189,4 +219,5 @@ export interface Session {
   durationSec: number;
   roundsCompleted: number;
   exercises: WorkoutExercise[];
+  fitnessTest?: FitnessTestResult;
 }

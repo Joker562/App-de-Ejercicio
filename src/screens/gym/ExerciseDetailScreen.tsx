@@ -78,7 +78,7 @@ export function ExerciseDetailScreen({ route }: DashboardScreenProps<'ExerciseDe
 
       {pick ? (
         <Button
-          title={pickFor === 'routine' ? 'Añadir a la rutina' : 'Añadir a la sesión'}
+          title={pickFor === 'workout' ? 'Añadir a la sesión' : 'Añadir a la rutina'}
           onPress={() => pick(exercise.id)}
         />
       ) : null}

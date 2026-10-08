@@ -2,7 +2,12 @@
 
 Aplicación de fitness con dos modos:
 
-- **Modo Militar**: calistenia, resistencia y disciplina. Programas predefinidos (Murph, prueba de condición física, Cindy, EMOM, Tabata), temporizadores AMRAP/EMOM/Tabata, registro rápido con checkbox y rangos de Recluta a Fuerzas Especiales.
+- **Modo Militar**: calistenia, resistencia y disciplina. Programas predefinidos (Murph, prueba de condición física, Cindy, EMOM, Tabata...), temporizadores AMRAP/EMOM/Tabata con avisos de voz, registro de reps y tiempos por serie, y rangos de Recluta a Fuerzas Especiales.
+  - Rangos por puntos: cada programa da puntos según su dificultad (prorrateados por lo completado) y los programas se desbloquean al subir de rango.
+  - Prueba física con nota sobre 300 según edad y sexo (estimación basada en las tablas históricas de la APFT, no oficial).
+  - Mejores marcas por programa (rondas en AMRAP, tiempo en Murph, nota en la prueba física).
+  - Rutinas militares personalizadas con los ejercicios de calistenia del catálogo.
+  - Progresiones de calistenia (flexiones, dominadas, fondos, piernas, core) que se marcan solas al registrar el objetivo.
 - **Modo Gimnasio**: hipertrofia y fuerza. Creador de rutinas, biblioteca de ejercicios por grupo muscular, registro de series/reps/peso (kg o lbs), descanso automático entre series, historial de volumen y 1RM estimado. Durante la sesión:
   - "La última vez": el peso se rellena con la sesión anterior y se muestra la serie previa; si completaste todo, sugiere subir el peso (doble progresión).
   - Tipos de serie (calentamiento, dropset, al fallo), RPE y notas por ejercicio.

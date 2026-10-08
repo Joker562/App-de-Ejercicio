@@ -8,7 +8,9 @@ import { PlateCalculatorScreen } from '../screens/gym/PlateCalculatorScreen';
 import { RoutineBuilderScreen } from '../screens/gym/RoutineBuilderScreen';
 import { RoutineListScreen } from '../screens/gym/RoutineListScreen';
 import { RoutineTemplatesScreen } from '../screens/gym/RoutineTemplatesScreen';
+import { FitnessTestScreen } from '../screens/military/FitnessTestScreen';
 import { ProgramListScreen } from '../screens/military/ProgramListScreen';
+import { ProgressionsScreen } from '../screens/military/ProgressionsScreen';
 import { TimerScreen } from '../screens/military/TimerScreen';
 import { useAppStore } from '../store/useAppStore';
 import { useTheme } from '../theme/useTheme';
@@ -31,6 +33,16 @@ export function DashboardStack() {
       <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ title: 'Inicio' }} />
       <Stack.Screen name="ProgramList" component={ProgramListScreen} options={{ title: 'Programas' }} />
       <Stack.Screen name="Timer" component={TimerScreen} options={{ title: 'Temporizadores' }} />
+      <Stack.Screen
+        name="FitnessTest"
+        component={FitnessTestScreen}
+        options={{ title: 'Prueba física' }}
+      />
+      <Stack.Screen
+        name="Progressions"
+        component={ProgressionsScreen}
+        options={{ title: 'Progresiones' }}
+      />
       <Stack.Screen name="RoutineList" component={RoutineListScreen} options={{ title: 'Mis rutinas' }} />
       <Stack.Screen
         name="RoutineTemplates"
@@ -41,7 +53,11 @@ export function DashboardStack() {
         name="RoutineBuilder"
         component={RoutineBuilderScreen}
         options={({ route }) => ({
-          title: route.params?.routineId ? 'Editar rutina' : 'Nueva rutina',
+          title: route.params?.routineId
+            ? 'Editar rutina'
+            : route.params?.mode === 'military'
+              ? 'Nueva rutina militar'
+              : 'Nueva rutina',
         })}
       />
       <Stack.Screen

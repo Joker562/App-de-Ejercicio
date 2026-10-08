@@ -5,6 +5,7 @@ import { useWorkoutStore } from '../store/useWorkoutStore';
 import { useTheme } from '../theme/useTheme';
 import { formatDuration } from '../utils/format';
 import { useNow } from '../utils/useNow';
+import { speak, useSpokenCountdown } from '../utils/voice';
 import { ProgressBar } from './ProgressBar';
 import { Button } from './ui';
 
@@ -22,9 +23,12 @@ export function RestTimer() {
   const remainingSec = rest ? Math.max(0, (rest.endsAt - now) / 1000) : 0;
   const finished = rest !== null && remainingSec <= 0;
 
+  useSpokenCountdown(remainingSec, rest !== null, `rest-${rest?.endsAt}`);
+
   useEffect(() => {
     if (!finished) return;
     Vibration.vibrate([0, 300, 150, 300]);
+    speak('¡A por la siguiente serie!');
     skipRest();
   }, [finished, skipRest]);
 

@@ -88,7 +88,7 @@ export function ExerciseLibraryScreen({
           onPress={() => pick(item.id)}
           hitSlop={8}
           accessibilityRole="button"
-          accessibilityLabel={`Añadir ${item.name} a la ${pickFor === 'routine' ? 'rutina' : 'sesión'}`}
+          accessibilityLabel={`Añadir ${item.name} a la ${pickFor === 'workout' ? 'sesión' : 'rutina'}`}
         >
           <Ionicons name="add-circle" size={30} color={theme.accent} />
         </Pressable>

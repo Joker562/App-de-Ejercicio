@@ -91,7 +91,7 @@ export function pendingAlerts(config: TimerConfig, elapsedSec: number): Schedule
 
 export function intervalPhase(config: TimerConfig, elapsedMs: number): IntervalPhase {
   const total = timerTotalSec(config);
-  const elapsed = Math.min(elapsedMs / 1000, total);
+  const elapsed = Math.max(0, Math.min(elapsedMs / 1000, total));
   const totalRemainingSec = total - elapsed;
   const done = elapsed >= total;
 

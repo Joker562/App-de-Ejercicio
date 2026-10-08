@@ -31,6 +31,10 @@ export function RoutineBuilderScreen({
   const existing = useRoutineStore((s) => s.routines.find((r) => r.id === routineId));
   const saveRoutine = useRoutineStore((s) => s.saveRoutine);
   const defaultRestSec = useAppStore((s) => s.defaultRestSec);
+  // Militar: sin descanso automático ni superseries; sólo series y reps.
+  const mode = existing?.mode ?? route.params?.mode ?? 'gym';
+  const isMilitary = mode === 'military';
+  const fields = isMilitary ? FIELDS.filter((f) => f.key !== 'restSec') : FIELDS;
 
   const [name, setName] = useState(existing?.name ?? '');
   const [exercises, setExercises] = useState<RoutineExercise[]>(existing?.exercises ?? []);
@@ -75,7 +79,13 @@ export function RoutineBuilderScreen({
     if (exercises.some((ex) => ex.targetSets < 1)) {
       return notify('Series no válidas', 'Cada ejercicio necesita al menos 1 serie.');
     }
-    saveRoutine({ id: existing?.id ?? createId(), name: name.trim(), exercises });
+    saveRoutine({
+      id: existing?.id ?? createId(),
+      name: name.trim(),
+      exercises,
+      ...(isMilitary ? { mode: 'military' as const } : {}),
+      ...(existing?.templateId ? { templateId: existing.templateId } : {}),
+    });
     navigation.goBack();
   };
 
@@ -91,7 +101,7 @@ export function RoutineBuilderScreen({
         style={inputStyle}
         value={name}
         onChangeText={setName}
-        placeholder="Ej. Full Body A"
+        placeholder={isMilitary ? 'Ej. Calistenia de mañana' : 'Ej. Full Body A'}
         placeholderTextColor={theme.textMuted}
       />
 
@@ -131,7 +141,7 @@ export function RoutineBuilderScreen({
                 </Pressable>
               </View>
               <View style={styles.fields}>
-                {FIELDS.map((field) => (
+                {fields.map((field) => (
                   <View key={field.key} style={styles.field}>
                     <Text style={[styles.fieldLabel, { color: theme.textMuted }]}>{field.label}</Text>
                     <TextInput
@@ -145,7 +155,7 @@ export function RoutineBuilderScreen({
                 ))}
               </View>
             </Card>
-            {index < exercises.length - 1 ? (
+            {!isMilitary && index < exercises.length - 1 ? (
               <Pressable
                 onPress={() => toggleSuperset(index)}
                 accessibilityRole="button"
@@ -175,7 +185,7 @@ export function RoutineBuilderScreen({
       <Button
         title="+ Añadir ejercicio"
         variant="secondary"
-        onPress={() => navigation.navigate('ExerciseLibrary', { pickFor: 'routine' })}
+        onPress={() => navigation.navigate('ExerciseLibrary', { pickFor: isMilitary ? 'military-routine' : 'routine' })}
       />
 
       <Button title="Guardar rutina" onPress={save} style={styles.save} />

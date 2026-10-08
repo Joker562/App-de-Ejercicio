@@ -26,6 +26,13 @@ export function formatDuration(totalSec: number): string {
   return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
 }
 
+/** "13:45" -> 825, "1:02:05" -> 3725, "90" -> 90; null si no es válido. */
+export function parseDuration(text: string): number | null {
+  const parts = text.trim().split(':');
+  if (parts.length === 0 || parts.length > 3 || parts.some((p) => !/^\d+$/.test(p))) return null;
+  return parts.map(Number).reduce((total, part) => total * 60 + part, 0);
+}
+
 export function formatDate(timestamp: number): string {
   return new Date(timestamp).toLocaleDateString('es-ES', {
     weekday: 'short',
