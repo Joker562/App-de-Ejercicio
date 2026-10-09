@@ -178,6 +178,7 @@ export function setsByMuscleGroup(
     Hombros: 0,
     Brazos: 0,
     Core: 0,
+    Cuello: 0,
   };
   for (const session of sessions) {
     if (session.mode !== mode || session.endedAt < since) continue;

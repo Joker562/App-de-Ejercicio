@@ -8,6 +8,7 @@ import { WorkoutCues } from './src/components/WorkoutCues';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { useStoresHydrated } from './src/store/useStoresHydrated';
 import { setupNotifications } from './src/utils/notifications';
+import { prefetchTrainingImages } from './src/utils/prefetchImages';
 
 // La pantalla de inicio nativa se mantiene hasta cargar los datos guardados.
 if (Platform.OS !== 'web') {
@@ -19,7 +20,9 @@ export default function App() {
   const hydrated = useStoresHydrated();
 
   useEffect(() => {
-    if (hydrated && Platform.OS !== 'web') SplashScreen.hide();
+    if (!hydrated) return;
+    if (Platform.OS !== 'web') SplashScreen.hide();
+    prefetchTrainingImages();
   }, [hydrated]);
 
   if (!hydrated) return null;

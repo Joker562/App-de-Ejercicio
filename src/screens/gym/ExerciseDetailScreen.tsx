@@ -1,6 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ExerciseAnimation } from '../../components/ExerciseAnimation';
+import { ExerciseHistoryCard } from '../../components/ExerciseHistoryCard';
 import { Button, Card, Screen, SectionTitle } from '../../components/ui';
 import {
   CATEGORY_LABELS,
@@ -13,6 +15,7 @@ import {
 } from '../../data/exercises';
 import type { DashboardScreenProps } from '../../navigation/types';
 import { usePickExercise } from '../../navigation/usePickExercise';
+import { useAppStore } from '../../store/useAppStore';
 import { useHistoryStore } from '../../store/useHistoryStore';
 import { useTheme } from '../../theme/useTheme';
 import { exerciseHistory } from '../../utils/records';
@@ -23,7 +26,11 @@ export function ExerciseDetailScreen({ navigation, route }: DashboardScreenProps
   const pickFor = route.params.pickFor;
   const pick = usePickExercise(pickFor);
   const sessions = useHistoryStore((s) => s.sessions);
-  const timesDone = exerciseHistory(sessions, route.params.exerciseId).length;
+  const unit = useAppStore((s) => s.unit);
+  const favorites = useAppStore((s) => s.favoriteExercises);
+  const toggleFavorite = useAppStore((s) => s.toggleFavorite);
+  const history = exerciseHistory(sessions, route.params.exerciseId);
+  const isFavorite = favorites.includes(route.params.exerciseId);
 
   if (!exercise) {
     return (
@@ -32,6 +39,9 @@ export function ExerciseDetailScreen({ navigation, route }: DashboardScreenProps
       </Screen>
     );
   }
+
+  // Algunos pasos de la base vienen vacíos; se omiten para no numerar huecos.
+  const steps = exercise.instructions.filter((step) => step.trim() !== '');
 
   const tags = [
     LEVEL_LABELS[exercise.level],
@@ -50,9 +60,23 @@ export function ExerciseDetailScreen({ navigation, route }: DashboardScreenProps
         </Text>
       ) : null}
 
-      <View>
-        <Text style={[styles.name, { color: theme.text }]}>{exercise.name}</Text>
-        <Text style={[styles.nameEn, { color: theme.textMuted }]}>{exercise.nameEn}</Text>
+      <View style={styles.titleRow}>
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.name, { color: theme.text }]}>{exercise.name}</Text>
+          <Text style={[styles.nameEn, { color: theme.textMuted }]}>{exercise.nameEn}</Text>
+        </View>
+        <Pressable
+          onPress={() => toggleFavorite(exercise.id)}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+        >
+          <Ionicons
+            name={isFavorite ? 'star' : 'star-outline'}
+            size={28}
+            color={isFavorite ? theme.accent : theme.textMuted}
+          />
+        </Pressable>
       </View>
 
       <View style={styles.tags}>
@@ -87,32 +111,42 @@ export function ExerciseDetailScreen({ navigation, route }: DashboardScreenProps
         />
       ) : null}
 
-      {timesDone > 0 && !pick ? (
-        <Button
-          title={`Ver tu progreso (${timesDone} ${timesDone === 1 ? 'sesión' : 'sesiones'})`}
-          variant="secondary"
-          onPress={() =>
-            navigation.navigate('Historial', {
-              screen: 'ExerciseProgress',
-              params: { exerciseId: exercise.id },
-              initial: false,
-            })
-          }
-        />
+      {history.length > 0 ? (
+        <>
+          <SectionTitle>Tu historial</SectionTitle>
+          <ExerciseHistoryCard
+            history={history}
+            unit={unit}
+            onOpenProgress={
+              pick
+                ? undefined
+                : () =>
+                    navigation.navigate('Historial', {
+                      screen: 'ExerciseProgress',
+                      params: { exerciseId: exercise.id },
+                      initial: false,
+                    })
+            }
+          />
+        </>
       ) : null}
 
-      <SectionTitle>Instrucciones (en inglés)</SectionTitle>
-      <Card>
-        {exercise.instructions.map((step, i) => (
-          <View key={i} style={styles.step}>
-            <Text style={[styles.stepNumber, { color: theme.accent }]}>{i + 1}</Text>
-            <Text style={[styles.stepText, { color: theme.text }]}>{step}</Text>
-          </View>
-        ))}
-      </Card>
+      {steps.length > 0 ? (
+        <>
+          <SectionTitle>Instrucciones</SectionTitle>
+          <Card>
+            {steps.map((step, i) => (
+              <View key={i} style={styles.step}>
+                <Text style={[styles.stepNumber, { color: theme.accent }]}>{i + 1}</Text>
+                <Text style={[styles.stepText, { color: theme.text }]}>{step}</Text>
+              </View>
+            ))}
+          </Card>
+        </>
+      ) : null}
 
       <Text style={[styles.credit, { color: theme.textMuted }]}>
-        Imágenes e instrucciones: free-exercise-db (dominio público).
+        Imágenes e instrucciones: free-exercise-db (dominio público), traducidas al español.
       </Text>
     </Screen>
   );
@@ -120,6 +154,7 @@ export function ExerciseDetailScreen({ navigation, route }: DashboardScreenProps
 
 const styles = StyleSheet.create({
   hint: { fontSize: 12, textAlign: 'center' },
+  titleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   name: { fontSize: 24, fontWeight: '800' },
   nameEn: { fontSize: 14, marginTop: 2 },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },

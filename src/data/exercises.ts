@@ -43,11 +43,21 @@ export function resolveExerciseId(id: string): string {
 }
 
 /** Fijado al mismo commit que el script de generación. */
-const IMAGE_BASE_URL =
-  'https://raw.githubusercontent.com/yuhonas/free-exercise-db/f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5/exercises/';
+const SOURCE_COMMIT = 'f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5';
 
-export function exerciseImageUrls(exercise: Exercise): string[] {
-  return exercise.images.map((path) => IMAGE_BASE_URL + path);
+/**
+ * Orígenes de las fotos, en orden de preferencia. jsDelivr es un CDN que las
+ * sirve con caché de un año (contenido inmutable al fijar el commit); GitHub
+ * directo queda como respaldo si el CDN falla.
+ */
+export const IMAGE_MIRRORS = [
+  `https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@${SOURCE_COMMIT}/exercises/`,
+  `https://raw.githubusercontent.com/yuhonas/free-exercise-db/${SOURCE_COMMIT}/exercises/`,
+];
+
+export function exerciseImageUrls(exercise: Exercise, mirror = 0): string[] {
+  const base = IMAGE_MIRRORS[Math.min(mirror, IMAGE_MIRRORS.length - 1)];
+  return exercise.images.map((path) => base + path);
 }
 
 export const MUSCLE_LABELS: Record<Muscle, string> = {

@@ -24,6 +24,8 @@ export function MuscleVolumeCard({ sessions, mode }: { sessions: Session[]; mode
       <Text style={[styles.title, { color: theme.text }]}>Series por grupo muscular (7 días)</Text>
       {MUSCLE_GROUPS.map((group) => {
         const sets = totals[group];
+        // Cuello es un grupo menor: sólo se muestra si se ha entrenado.
+        if (group === 'Cuello' && sets === 0) return null;
         const inRange = sets >= TARGET.min && sets <= TARGET.max;
         const color = !isGym ? theme.primary : inRange ? theme.success : sets > TARGET.max ? theme.danger : theme.accent;
         return (

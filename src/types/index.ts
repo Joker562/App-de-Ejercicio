@@ -8,7 +8,8 @@ export type MuscleGroup =
   | 'Piernas'
   | 'Hombros'
   | 'Brazos'
-  | 'Core';
+  | 'Core'
+  | 'Cuello';
 
 /** Músculos tal como vienen en free-exercise-db (las etiquetas en español están en exercises.ts). */
 export type Muscle =
@@ -72,7 +73,7 @@ export interface Exercise {
   level: ExerciseLevel;
   force: 'push' | 'pull' | 'static' | null;
   mechanic: 'compound' | 'isolation' | null;
-  /** Pasos en inglés, tal como vienen en la base. */
+  /** Pasos traducidos al español (scripts/exercise-instructions-es); pueden venir vacíos. */
   instructions: string[];
   /** Rutas relativas: posición inicial y final del movimiento. */
   images: string[];

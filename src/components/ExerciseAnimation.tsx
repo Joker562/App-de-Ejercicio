@@ -13,7 +13,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import { exerciseImageUrls } from '../data/exercises';
+import { IMAGE_MIRRORS, exerciseImageUrls } from '../data/exercises';
 import { useTheme } from '../theme/useTheme';
 import type { Exercise } from '../types';
 
@@ -34,8 +34,14 @@ interface Props {
  */
 export function ExerciseAnimation({ exercise, animated = true, style }: Props) {
   const theme = useTheme();
-  const [start, end] = exerciseImageUrls(exercise);
+  // Si una foto falla en un origen, se prueba el siguiente (CDN -> GitHub).
+  const [mirror, setMirror] = useState(0);
+  const [start, end] = exerciseImageUrls(exercise, mirror);
   const [failed, setFailed] = useState(false);
+  const handleError = () => {
+    if (mirror < IMAGE_MIRRORS.length - 1) setMirror(mirror + 1);
+    else setFailed(true);
+  };
   const [paused, setPaused] = useState(false);
   const [progress] = useState(() => new Animated.Value(0));
 
@@ -88,7 +94,7 @@ export function ExerciseAnimation({ exercise, animated = true, style }: Props) {
         cachePolicy="disk"
         transition={150}
         recyclingKey={exercise.id}
-        onError={() => setFailed(true)}
+        onError={handleError}
         accessibilityLabel={`${exercise.name}: posición inicial`}
       />
       {canAnimate ? (
@@ -98,7 +104,7 @@ export function ExerciseAnimation({ exercise, animated = true, style }: Props) {
             style={StyleSheet.absoluteFill}
             contentFit="contain"
             cachePolicy="disk"
-            onError={() => setFailed(true)}
+            onError={handleError}
             accessibilityLabel={`${exercise.name}: posición final`}
           />
         </Animated.View>

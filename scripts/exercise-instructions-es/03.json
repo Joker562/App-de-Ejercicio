@@ -1,0 +1,279 @@
+{
+  "Bicycling_Stationary": [
+    "Para empezar, siéntate en la bicicleta y ajusta el sillín a tu altura.",
+    "Elige la opción que quieras en el menú; puede que tengas que empezar a pedalear para encenderla. Puedes usar el modo manual o elegir un programa. Normalmente puedes introducir tu edad y peso para estimar las calorías quemadas. Puedes cambiar la resistencia durante el entrenamiento, y las empuñaduras sirven para medir el pulso y mantener una intensidad adecuada."
+  ],
+  "Board_Press": [
+    "Túmbate en el banco, con la cabeza más allá de la barra si es posible. Se pueden atornillar de una a cinco tablas de unos 5x15 cm, que sujeta un compañero, unas bandas o simplemente metidas bajo la camiseta.",
+    "Mete los pies por debajo y arquea la espalda. Apoyándote en la barra, despega los hombros del banco y llévalos atrás, juntando las escápulas. Usa los pies para clavar los trapecios en el banco. Mantén esta posición firme durante todo el movimiento.",
+    "Puedes usar tu agarre habitual de press de banca o uno a la anchura de los hombros para trabajar más los tríceps. Saca la barra del soporte sin adelantar los hombros. Barra, muñeca y codo deben estar siempre alineados. Concéntrate en apretar la barra como si quisieras partirla.",
+    "Baja la barra hasta las tablas y empújala hacia arriba con toda la fuerza posible. Los codos van pegados hasta bloquear arriba."
+  ],
+  "Body_Tricep_Press": [
+    "Coloca una barra en un rack a la altura del pecho.",
+    "De pie, agarra la barra a la anchura de los hombros y retrocede uno o dos metros, con los pies juntos y los brazos estirados, de modo que quedes inclinado apoyado en la barra. Esta será tu posición inicial.",
+    "Flexiona los codos, bajando el cuerpo hacia la barra.",
+    "Haz una pausa e invierte el movimiento extendiendo los codos.",
+    "Cuando domines tu peso corporal, progresa colgándote cadenas de los hombros."
+  ],
+  "Body-Up": [
+    "Colócate en posición de plancha en el suelo, con el peso sobre las puntas de los pies y los antebrazos y el torso recto. Los antebrazos, a la anchura de los hombros. Esta será tu posición inicial.",
+    "Presionando con fuerza las palmas contra el suelo, extiende los codos para elevar el cuerpo. Mantén el torso rígido durante el movimiento.",
+    "Baja despacio los antebrazos al suelo dejando que los codos se flexionen.",
+    "Repite."
+  ],
+  "Bodyweight_Flyes": [
+    "Coloca en el suelo, una junto a otra, dos barras Z con la misma carga. Comprueba que puedan rodar.",
+    "Colócate en posición de flexión sobre las barras, con el peso en las puntas de los pies y las manos, los brazos estirados y el cuerpo recto.",
+    "Apoya las manos en las barras. Esta será tu posición inicial.",
+    "Con un movimiento lento y controlado, separa las manos de la línea media del cuerpo haciendo rodar las barras. Toma aire en esta fase.",
+    "Tras separarlas todo lo que puedas, vuelve a la posición inicial juntándolas de nuevo. Suelta el aire al hacerlo."
+  ],
+  "Bodyweight_Mid_Row": [
+    "Agarra una barra de dominadas con agarre medio o abierto y las palmas hacia fuera. Colgado, lleva las rodillas al pecho, échate hacia atrás y pasa las piernas por encima de la barra. Esta será tu posición inicial.",
+    "Desde los brazos estirados, flexiona los codos y junta las escápulas para subir el cuerpo hasta que las piernas toquen la barra.",
+    "Tras una breve pausa, vuelve a la posición inicial."
+  ],
+  "Bodyweight_Squat": [
+    "Ponte de pie con los pies a la anchura de los hombros. Puedes poner las manos detrás de la cabeza. Esta será tu posición inicial.",
+    "Flexiona rodillas y cadera, llevando la cadera atrás como para sentarte.",
+    "Baja hasta la profundidad completa si puedes e invierte rápidamente el movimiento hasta la posición inicial. Durante la sentadilla, mantén la cabeza y el pecho altos y empuja las rodillas hacia fuera."
+  ],
+  "Bodyweight_Walking_Lunge": [
+    "Ponte de pie con los pies a la anchura de los hombros y las manos en la cadera.",
+    "Da un paso al frente con una pierna, flexionando las rodillas para bajar la cadera. Baja hasta que la rodilla de atrás casi toque el suelo. Mantén la postura erguida y la rodilla delantera sobre el pie delantero.",
+    "Empuja con el talón del pie delantero y extiende ambas rodillas para volver a subir.",
+    "Adelanta el pie de atrás y repite la zancada con la otra pierna."
+  ],
+  "Bosu_Ball_Cable_Crunch_With_Side_Bends": [
+    "Engancha un asa estándar en cada brazo de una máquina de poleas y colócalas en la posición más baja.",
+    "Coloca un bosu delante de la máquina, centrado.",
+    "Túmbate sobre el bosu con la zona lumbar arqueada sobre él. El trasero debe quedar cerca del suelo, sin tocarlo.",
+    "Con las dos manos, alcanza hacia atrás y agarra el asa de cada polea.",
+    "Con los pies bien separados, estira los brazos al frente, entre las rodillas. Las manos deben quedar a la altura de las rodillas.",
+    "Mantén los brazos rectos y alineados con el ángulo ascendente del cable. Eleva el torso como en un crunch, sin bajar ni flexionar los brazos.",
+    "Mantén los brazos rígidos. Baja despacio a la posición inicial, con la espalda arqueada sobre el bosu y el abdomen estirado.",
+    "Repite la misma serie de movimientos hasta el fallo.",
+    "Al llegar al fallo, mantén el abdomen firme y sube el torso a posición de plancha para despegar la espalda del bosu.",
+    "Baja los brazos a los costados, rectos, y haz inclinaciones laterales alternas intentando tocar los talones. Este movimiento final trabaja los oblicuos."
+  ],
+  "Bottoms_Up": [
+    "Túmbate boca arriba en el suelo con las piernas estiradas y los brazos a los lados. Esta será tu posición inicial.",
+    "Lleva las rodillas al pecho flexionando cadera y rodillas. Después estira las piernas hacia arriba hasta que queden perpendiculares al suelo. Rota y eleva la pelvis para despegar los glúteos del suelo.",
+    "Tras una breve pausa, vuelve a la posición inicial."
+  ],
+  "Bottoms-Up_Clean_From_The_Hang_Position": [
+    "Ponte de pie, erguido, con una kettlebell en una mano.",
+    "Lleva la kettlebell atrás con fuerza e invierte el movimiento con energía. Aprieta el asa todo lo que puedas y sube la kettlebell al hombro con la base hacia arriba."
+  ],
+  "Box_Jump_Multiple_Response": [
+    "Colócate relajado frente al cajón o plataforma, a un brazo de distancia más o menos, con los brazos abajo a los lados y las piernas un poco flexionadas.",
+    "Ayudándote del impulso de los brazos, salta hacia arriba y hacia delante, aterrizando con ambos pies a la vez sobre el cajón o plataforma.",
+    "Baja o salta inmediatamente al punto de partida y repite la secuencia."
+  ],
+  "Box_Skip": [
+    "Necesitas varios cajones alineados, separados unos 2,5 metros.",
+    "Colócate frente al primer cajón, con una pierna un poco por detrás de la otra.",
+    "Impúlsate con la pierna de atrás, intentando subir la cadera lo más alto posible.",
+    "Nada más aterrizar en el cajón, lleva la otra pierna hacia delante y arriba para ganar altura y distancia y salta desde el cajón. Aterriza entre los dos primeros cajones con la misma pierna que aterrizó en el primero.",
+    "Después, avanza al siguiente cajón y repite."
+  ],
+  "Box_Squat": [
+    "La sentadilla al cajón permite bajar a la profundidad deseada y desarrollar fuerza explosiva. Colócate en un rack de potencia con un cajón de la altura adecuada detrás. Normalmente se busca una altura que te deje en sentadilla paralela, pero puedes entrenar más alto o más bajo.",
+    "Colócate bajo la barra y apóyala sobre la parte trasera de los hombros. Junta las escápulas y gira los codos hacia delante, como si quisieras doblar la barra sobre los hombros. Saca la barra del soporte con un arco firme en la zona lumbar y retrocede a tu posición. Separa más los pies para trabajar más espalda, glúteos, aductores e isquiotibiales, o júntalos para trabajar más el cuádriceps. Mantén la cabeza mirando al frente.",
+    "Con espalda, hombros y core firmes, empuja rodillas y cadera hacia fuera y empieza a bajar. Lleva la cadera atrás hasta sentarte en el cajón. Lo ideal es que las espinillas queden perpendiculares al suelo. Haz una pausa en el cajón y relaja los flexores de cadera. Nunca rebotes en el cajón.",
+    "Con el peso en los talones y empujando pies y rodillas hacia fuera, sube desde el cajón dirigiendo el movimiento con la cabeza. Sigue subiendo con todo el cuerpo en tensión."
+  ],
+  "Box_Squat_with_Bands": [
+    "Colócate en un rack de potencia con un cajón de la altura adecuada detrás. Coloca las bandas en los extremos de la barra, sujetas a los ganchos para bandas, al rack o a mancuernas, con la tensión adecuada. Si usas mancuernas, fíjalas para que no se muevan y comprueba que pesan lo suficiente para las bandas; puedes añadir discos encima. Si necesitas más tensión, separa más la base en el suelo o acorta las bandas. Normalmente se busca una altura de cajón que te deje en sentadilla paralela, pero puedes entrenar más alto o más bajo.",
+    "Colócate bajo la barra y apóyala sobre la parte trasera de los hombros. Junta las escápulas y gira los codos hacia delante, como si quisieras doblar la barra sobre los hombros. Saca la barra del soporte con un arco firme en la zona lumbar y retrocede a tu posición. Separa más los pies para trabajar más espalda, glúteos, aductores e isquiotibiales, o júntalos para trabajar más el cuádriceps. Mantén la cabeza mirando al frente.",
+    "Con espalda, hombros y core firmes, empuja rodillas y cadera hacia fuera y empieza a bajar. Lleva la cadera atrás hasta sentarte en el cajón. Lo ideal es que las espinillas queden perpendiculares al suelo. Haz una pausa en el cajón y relaja los flexores de cadera. Nunca rebotes en el cajón.",
+    "Con el peso en los talones y empujando pies y rodillas hacia fuera, sube desde el cajón dirigiendo el movimiento con la cabeza. Sigue subiendo con todo el cuerpo en tensión. Devuelve la barra al soporte con cuidado."
+  ],
+  "Box_Squat_with_Chains": [
+    "Colócate en un rack de potencia con un cajón de la altura adecuada detrás. Normalmente se busca una altura que te deje en sentadilla paralela, pero puedes entrenar más alto o más bajo.",
+    "Para colocar las cadenas, pasa la cadena guía por los extremos de la barra y engancha la cadena pesada con un mosquetón. Ajusta la cadena guía para que, arriba del todo, queden aún algunos eslabones en el suelo.",
+    "Colócate bajo la barra y apóyala sobre la parte trasera de los hombros. Junta las escápulas y gira los codos hacia delante, como si quisieras doblar la barra sobre los hombros. Saca la barra del soporte con un arco firme en la zona lumbar y retrocede a tu posición. Separa más los pies para trabajar más espalda, glúteos, aductores e isquiotibiales, o júntalos para trabajar más el cuádriceps. Mantén la cabeza mirando al frente.",
+    "Con espalda, hombros y core firmes, empuja rodillas y cadera hacia fuera y empieza a bajar. Lleva la cadera atrás hasta sentarte en el cajón. Lo ideal es que las espinillas queden perpendiculares al suelo. Haz una pausa en el cajón y relaja los flexores de cadera. Nunca rebotes en el cajón.",
+    "Con el peso en los talones y empujando pies y rodillas hacia fuera, sube desde el cajón dirigiendo el movimiento con la cabeza. Sigue subiendo con todo el cuerpo en tensión."
+  ],
+  "Brachialis-SMR": [
+    "Túmbate de lado con la parte superior del brazo sobre el rodillo de espuma. El brazo debe quedar más o menos alineado con el cuerpo, con la cara externa del bíceps apoyada en el rodillo.",
+    "Eleva la cadera del suelo, apoyando el peso en el brazo y en los pies. Mantén 10-30 segundos y cambia de lado."
+  ],
+  "Bradford_Rocky_Presses": [
+    "Siéntate en un banco de press militar con una barra a la altura de los hombros y agarre prono (palmas hacia delante). Consejo: el agarre debe ser más ancho que los hombros y formar un ángulo de 90 grados entre antebrazo y brazo cuando la barra baja. Esta es tu posición inicial.",
+    "Con el agarre correcto, sube la barra por encima de la cabeza bloqueando los brazos.",
+    "Baja la barra despacio hasta la parte trasera de la cabeza mientras tomas aire.",
+    "Sube la barra a la posición inicial mientras sueltas el aire.",
+    "Baja la barra despacio a la posición inicial (por delante) mientras tomas aire. Esto es una repetición.",
+    "Sigue alternando así hasta completar las repeticiones recomendadas."
+  ],
+  "Butt_Lift_Bridge": [
+    "Túmbate boca arriba en el suelo, con las manos a los lados y las rodillas flexionadas. Los pies, más o menos a la anchura de los hombros. Esta será tu posición inicial.",
+    "Empujando sobre todo con los talones, eleva la cadera del suelo con la espalda recta. Suelta el aire en esta fase y mantén un segundo arriba.",
+    "Vuelve despacio a la posición inicial mientras tomas aire."
+  ],
+  "Butt-Ups": [
+    "Colócate en posición de flexión, pero con los codos en el suelo, apoyado en los antebrazos. Los brazos forman un ángulo de 90 grados.",
+    "Arquea ligeramente la espalda hacia arriba en lugar de mantenerla totalmente recta.",
+    "Eleva los glúteos hacia el techo apretando fuerte el abdomen para acercar costillas y cadera. Acabarás en una posición de puente alto. Suelta el aire en esta fase.",
+    "Baja despacio a la posición inicial mientras tomas aire. Consejo: no dejes que la espalda se hunda.",
+    "Repite las repeticiones recomendadas."
+  ],
+  "Butterfly": [
+    "Siéntate en la máquina con la espalda apoyada en el respaldo.",
+    "Agarra las asas. Consejo: la parte superior de los brazos debe quedar paralela al suelo; ajusta la máquina para ello. Esta será tu posición inicial.",
+    "Junta las asas despacio apretando el pecho en el centro. Suelta el aire en esta fase y mantén la contracción un segundo.",
+    "Vuelve despacio a la posición inicial mientras tomas aire, hasta estirar del todo el pecho.",
+    "Repite las repeticiones recomendadas."
+  ],
+  "Cable_Chest_Press": [
+    "Ajusta un peso adecuado y siéntate agarrando las asas. La parte superior de los brazos debe formar unos 45 grados con el cuerpo, con la cabeza y el pecho erguidos y los codos flexionados a unos 90 grados. Esta será tu posición inicial.",
+    "Extiende los codos para empujar las asas justo delante de ti hasta juntarlas. Mantén las escápulas juntas durante el movimiento.",
+    "Tras una pausa con los brazos estirados, vuelve a la posición inicial manteniendo la tensión en los cables.",
+    "También puedes hacerlo sin apoyar la espalda, en inclinado, en declinado o alternando brazos."
+  ],
+  "Cable_Crossover": [
+    "Para la posición inicial, coloca las poleas en alto (por encima de la cabeza), elige la resistencia y agarra una polea con cada mano.",
+    "Da un paso al frente, por delante de la línea imaginaria entre ambas poleas, mientras juntas los brazos delante de ti. Inclina un poco el torso hacia delante desde la cintura. Esta será tu posición inicial.",
+    "Con los codos un poco flexionados para no forzar el tendón del bíceps, abre los brazos hacia los lados describiendo un arco amplio hasta notar estiramiento en el pecho. Toma aire en esta fase. Consejo: brazos y torso no se mueven; el movimiento solo ocurre en el hombro.",
+    "Vuelve a la posición inicial mientras sueltas el aire, por el mismo arco que usaste al abrir.",
+    "Mantén un segundo en la posición inicial y repite las veces indicadas."
+  ],
+  "Cable_Crunch": [
+    "Arrodíllate bajo una polea alta con una cuerda enganchada.",
+    "Agarra la cuerda y bájala hasta que las manos queden junto a la cara.",
+    "Flexiona un poco la cadera y deja que el peso arquee la zona lumbar. Esta será tu posición inicial.",
+    "Sin mover la cadera, flexiona la cintura contrayendo el abdomen para que los codos vayan hacia la mitad de los muslos. Suelta el aire en esta fase y mantén la contracción un segundo.",
+    "Vuelve despacio a la posición inicial mientras tomas aire. Consejo: mantén la tensión en el abdomen durante todo el movimiento y no uses tanto peso que el esfuerzo recaiga en la zona lumbar.",
+    "Repite las repeticiones recomendadas."
+  ],
+  "Cable_Deadlifts": [
+    "Baja las poleas a la parte inferior de las torres y elige un peso adecuado. Colócate justo entre ambas columnas.",
+    "Agáchate flexionando cadera y rodillas hasta alcanzar las asas.",
+    "Agárralas y empieza a subir. Empujando con los talones, extiende cadera y rodillas con las manos colgando a los lados. Mantén la cabeza y el pecho altos durante todo el movimiento.",
+    "Tras quedar totalmente de pie, vuelve a la posición inicial y repite."
+  ],
+  "Cable_Hammer_Curls_-_Rope_Attachment": [
+    "Engancha una cuerda a una polea baja y ponte de pie frente a la máquina, a unos 30 cm.",
+    "Agarra la cuerda con agarre neutro (palmas enfrentadas) y ponte recto, manteniendo el arco natural de la espalda y el torso quieto.",
+    "Pega los codos a los costados y mantenlos fijos durante todo el movimiento. Consejo: solo se mueven los antebrazos, no la parte superior del brazo. Esta será tu posición inicial.",
+    "Con los bíceps, sube los brazos mientras sueltas el aire hasta que el bíceps toque el antebrazo. Consejo: recuerda mantener los codos pegados y la parte superior del brazo quieta.",
+    "Tras una contracción de 1 segundo apretando los bíceps, baja despacio el peso a la posición inicial.",
+    "Repite las repeticiones recomendadas."
+  ],
+  "Cable_Hip_Adduction": [
+    "Ponte de pie frente a una polea baja, mirando al frente, con una pierna junto a la polea y la otra más alejada.",
+    "Engancha la tobillera al cable y al tobillo de la pierna que está junto a la polea.",
+    "Sepárate de la máquina con los pies bien abiertos y agárrate a la barra de la estructura de poleas.",
+    "Apoya el peso en el pie sin tobillera (el más alejado) y deja que el cable lleve la pierna de la tobillera hacia la polea. Esta será tu posición inicial.",
+    "Haz el movimiento llevando la pierna de la tobillera por delante de la otra, usando la cara interna del muslo para aducir la cadera. Suelta el aire en esta fase.",
+    "Vuelve despacio a la posición inicial mientras tomas aire.",
+    "Repite las repeticiones recomendadas y después haz el mismo movimiento con la otra pierna."
+  ],
+  "Cable_Incline_Pushdown": [
+    "Túmbate en un banco inclinado de espaldas a una polea alta con una barra recta.",
+    "Agarra la barra por encima de la cabeza con agarre prono (palmas hacia abajo) a la anchura de los hombros y estira los brazos delante de ti. La barra debe quedar a unos 5 cm de la parte alta de los muslos. Esta será tu posición inicial.",
+    "Sin flexionar los codos, lleva los brazos hacia atrás describiendo un semicírculo hasta que la barra quede justo encima de la cabeza. Toma aire en esta fase.",
+    "Vuelve despacio a la posición inicial usando los dorsales y mantén la contracción al llegar. Suelta el aire durante este movimiento.",
+    "Repite las repeticiones recomendadas."
+  ],
+  "Cable_Incline_Triceps_Extension": [
+    "Túmbate en un banco inclinado de espaldas a una polea alta con una barra recta.",
+    "Agarra la barra por encima de la cabeza con agarre prono (palmas hacia abajo) cerrado (menos que la anchura de los hombros) y mantén los codos pegados a los costados. La parte superior de los brazos debe formar unos 25 grados con el suelo.",
+    "Sin mover la parte superior de los brazos, estíralos contrayendo los tríceps. Suelta el aire en esta fase y mantén la contracción un segundo.",
+    "Vuelve despacio a la posición inicial.",
+    "Repite las repeticiones recomendadas."
+  ],
+  "Cable_Internal_Rotation": [
+    "Siéntate de lado junto a una polea baja (con las piernas estiradas al frente o cruzadas) y agarra el asa con el brazo más cercano al cable. Consejo: si puedes ajustar la altura de la polea, puedes sentarte en un banco plano.",
+    "Pega el codo al costado, flexionado a 90° y con el brazo apuntando hacia la polea. Esta será tu posición inicial.",
+    "Tira del asa hacia el cuerpo rotando el hombro hacia dentro hasta que el antebrazo cruce el abdomen, describiendo un semicírculo imaginario. Consejo: el antebrazo debe estar siempre perpendicular al torso.",
+    "Vuelve despacio a la posición inicial.",
+    "Repite las repeticiones recomendadas y después haz el movimiento con el otro brazo."
+  ],
+  "Cable_Iron_Cross": [
+    "Sube las poleas a la posición alta, elige la resistencia y toma un asa con cada mano.",
+    "Colócate justo entre ambas poleas con los brazos estirados hacia los lados. La cabeza y el pecho, altos, y los brazos formando una «T». Esta será tu posición inicial.",
+    "Con los codos estirados, tira de los brazos hacia abajo, pegándolos a los costados.",
+    "Tras una pausa en la máxima contracción, vuelve a la posición inicial.",
+    "Sigue con el movimiento las repeticiones indicadas."
+  ],
+  "Cable_Judo_Flip": [
+    "Engancha una cuerda a una torre y baja el cable a la polea más baja. Ponte de lado al cable con los pies bien separados y agarra la cuerda con ambas manos.",
+    "Gira el cuerpo alejándote de la polea mientras llevas la cuerda por encima del hombro, como en una proyección de judo.",
+    "Pasa el peso de un pie a otro mientras giras y encoges el tronco hacia delante, tirando del cable hacia abajo.",
+    "Vuelve a la posición inicial y repite hasta el fallo.",
+    "Después, cambia de posición y repite la misma serie con el otro lado."
+  ],
+  "Cable_Lying_Triceps_Extension": [
+    "Túmbate en un banco plano y agarra la barra recta de una polea baja con agarre prono cerrado. Consejo: lo más fácil es que alguien te pase la barra al tumbarte.",
+    "Con los brazos estirados, coloca la barra sobre el torso. Brazos y torso deben formar un ángulo de 90 grados. Esta será tu posición inicial.",
+    "Baja la barra flexionando los codos, con la parte superior de los brazos quieta y los codos cerrados, hasta que la barra roce la frente. Toma aire en esta fase.",
+    "Contrae los tríceps para subir la barra a la posición inicial. Suelta el aire en esta fase.",
+    "Mantén un segundo la contracción y repite las veces recomendadas."
+  ],
+  "Cable_One_Arm_Tricep_Extension": [
+    "Con la mano derecha, agarra un asa de la polea alta con agarre supino (palmas hacia arriba). Colócate justo delante de la columna de peso.",
+    "Tira del asa hacia abajo hasta que el brazo y el codo queden fijos pegados al costado. Brazo y antebrazo deben formar un ángulo agudo (menor de 90 grados). Puedes dejar el otro brazo en la cintura y adelantar una pierna para tener mejor equilibrio. Esta será tu posición inicial.",
+    "Contrayendo el tríceps, baja el asa hacia el costado hasta estirar el brazo. Suelta el aire al hacerlo. Consejo: solo se mueven los antebrazos; la parte superior del brazo queda quieta en todo momento.",
+    "Aprieta el tríceps y mantén un segundo la contracción.",
+    "Vuelve despacio el asa a la posición inicial.",
+    "Repite las repeticiones recomendadas y haz lo mismo con el otro brazo."
+  ],
+  "Cable_Preacher_Curl": [
+    "Coloca un banco predicador a unos 60 cm delante de una máquina de poleas.",
+    "Engancha una barra recta a la polea baja.",
+    "Siéntate en el banco predicador con los codos y la parte superior de los brazos bien apoyados en el cojín y pide que te pasen la barra de la polea.",
+    "Agarra la barra y estira del todo los brazos sobre el cojín. Esta será tu posición inicial.",
+    "Sube el peso hacia los hombros y aprieta fuerte los bíceps arriba. Suelta el aire al hacerlo y mantén un segundo arriba.",
+    "Baja despacio el peso a la posición inicial.",
+    "Repite las repeticiones recomendadas."
+  ],
+  "Cable_Rear_Delt_Fly": [
+    "Ajusta las poleas a la altura adecuada y elige el peso. Las poleas deben quedar por encima de la cabeza.",
+    "Agarra la polea izquierda con la mano derecha y la derecha con la izquierda, cruzando los cables delante de ti. Esta será tu posición inicial.",
+    "Lleva los brazos hacia atrás y hacia fuera, manteniéndolos rectos durante el movimiento.",
+    "Haz una pausa al final antes de volver las asas a la posición inicial."
+  ],
+  "Cable_Reverse_Crunch": [
+    "Engancha unas tobilleras a una polea baja y pon una esterilla en el suelo delante.",
+    "Siéntate con los pies hacia la polea y engancha el cable a los tobillos.",
+    "Túmbate, eleva las piernas y flexiona las rodillas a 90 grados. Las piernas y el cable deben quedar alineados; si no, sube o baja la polea.",
+    "Con las manos detrás de la cabeza, lleva las rodillas hacia el torso y despega la cadera del suelo.",
+    "Haz una breve pausa y, despacio y con control, baja la cadera y devuelve las piernas a los 90 grados iniciales. En esa posición debes seguir notando tensión en el abdomen.",
+    "Repite el mismo movimiento hasta el fallo."
+  ],
+  "Cable_Rope_Overhead_Triceps_Extension": [
+    "Engancha una cuerda a la polea baja de la máquina.",
+    "Agarrando la cuerda con ambas manos, estira los brazos con las manos justo por encima de la cabeza y agarre neutro (palmas enfrentadas). Los codos, cerca de la cabeza, y los brazos perpendiculares al suelo con los nudillos hacia el techo. Esta será tu posición inicial.",
+    "Baja despacio la cuerda por detrás de la cabeza sin mover la parte superior de los brazos. Toma aire y haz una pausa cuando los tríceps estén totalmente estirados.",
+    "Vuelve a la posición inicial contrayendo los tríceps mientras sueltas el aire.",
+    "Repite las repeticiones recomendadas."
+  ],
+  "Cable_Rope_Rear-Delt_Rows": [
+    "Siéntate en una estación de remo con polea baja en la misma posición que para el remo sentado de espalda.",
+    "Engancha una cuerda a la polea y agárrala con agarre prono. Los brazos, estirados y paralelos al suelo, con los codos abiertos.",
+    "Mantén la zona lumbar recta y lleva la cadera atrás para que las rodillas queden un poco flexionadas. Esta será tu posición inicial.",
+    "Tira de la cuerda hacia la parte alta del pecho, justo debajo del cuello, con los codos altos y abiertos. Sigue soltando el aire hasta que los codos pasen un poco por detrás de la espalda. Consejo: mantén la parte superior de los brazos horizontal, perpendicular al torso y paralela al suelo durante todo el movimiento.",
+    "Vuelve a la posición inicial, con los brazos estirados y los hombros estirados hacia delante. Toma aire en esta fase.",
+    "Repite las repeticiones recomendadas."
+  ],
+  "Cable_Russian_Twists": [
+    "Engancha un asa estándar y coloca el cable en una polea a media altura.",
+    "Túmbate sobre un fitball perpendicular al cable y agarra el asa con una mano. Debes quedar más o menos a un brazo de la polea, con el cable en tensión.",
+    "Agarra el asa con ambas manos y estira del todo los brazos sobre el pecho. Las manos deben quedar alineadas con la polea; si no, súbela o bájala.",
+    "Mantén la cadera elevada y el abdomen activo. Gira el torso alejándote de la polea un cuarto de vuelta completo. El cuerpo debe quedar recto de la cabeza a las rodillas.",
+    "Haz una breve pausa y vuelve despacio y con control a la posición inicial. En esa posición debes seguir notando tensión lateral en el cable.",
+    "Repite el mismo movimiento hasta el fallo.",
+    "Después, cambia de posición y repite la misma serie con el otro lado."
+  ],
+  "Cable_Seated_Crunch": [
+    "Siéntate en un banco plano de espaldas a una polea alta.",
+    "Agarra la cuerda con ambas manos (palmas enfrentadas) y coloca las manos firmemente sobre los hombros. Consejo: deja que el peso arquee un poco la zona lumbar. Esta será tu posición inicial.",
+    "Sin mover la cadera, flexiona la cintura para que los codos vayan hacia la cadera. Suelta el aire al hacerlo.",
+    "Mientras tomas aire, vuelve despacio a la posición inicial.",
+    "Repite las repeticiones recomendadas."
+  ]
+}

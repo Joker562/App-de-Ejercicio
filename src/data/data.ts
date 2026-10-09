@@ -162,6 +162,7 @@ export const MUSCLE_GROUPS: MuscleGroup[] = [
   'Hombros',
   'Brazos',
   'Core',
+  'Cuello',
 ];
 
 // El catálogo completo de ejercicios vive en ./exercises.ts.

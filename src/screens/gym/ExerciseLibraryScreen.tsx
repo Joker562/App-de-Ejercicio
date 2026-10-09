@@ -14,6 +14,8 @@ import {
 } from '../../data/exercises';
 import type { DashboardScreenProps } from '../../navigation/types';
 import { usePickExercise, usePickMode } from '../../navigation/usePickExercise';
+import { useAppStore } from '../../store/useAppStore';
+import { useHistoryStore } from '../../store/useHistoryStore';
 import { useTheme } from '../../theme/useTheme';
 import type {
   Equipment,
@@ -22,8 +24,15 @@ import type {
   MuscleGroup,
   TrainingMode,
 } from '../../types';
+import { trainedExercises } from '../../utils/records';
 
 const MUSCLE_OPTIONS = MUSCLE_GROUPS.map((g) => ({ value: g, label: g }));
+
+type ListFilter = 'favorites' | 'recent';
+const LIST_OPTIONS: { value: ListFilter; label: string }[] = [
+  { value: 'favorites', label: 'Favoritos' },
+  { value: 'recent', label: 'Recientes' },
+];
 
 /** Sólo las opciones que existen en los ejercicios de ese modo. */
 function optionsForMode(mode: TrainingMode) {
@@ -59,11 +68,31 @@ export function ExerciseLibraryScreen({
   const [muscleGroup, setMuscleGroup] = useState<MuscleGroup | null>(null);
   const [equipment, setEquipment] = useState<Equipment | null>(null);
   const [category, setCategory] = useState<ExerciseCategory | null>(null);
+  const [list, setList] = useState<ListFilter | null>(null);
+  const favorites = useAppStore((s) => s.favoriteExercises);
+  const toggleFavorite = useAppStore((s) => s.toggleFavorite);
+  const sessions = useHistoryStore((s) => s.sessions);
 
-  const results = useMemo(
-    () => filterExercises({ mode, query, muscleGroup, equipment, category }),
-    [mode, query, muscleGroup, equipment, category],
-  );
+  const results = useMemo(() => {
+    const filtered = filterExercises({ mode, query, muscleGroup, equipment, category });
+    if (list === 'favorites') {
+      const set = new Set(favorites);
+      return filtered.filter((e) => set.has(e.id));
+    }
+    if (list === 'recent') {
+      // Lo último que entrenaste primero.
+      const order = new Map(
+        trainedExercises(sessions, mode)
+          .sort((a, b) => b.last - a.last)
+          .map((e, i) => [e.exerciseId, i]),
+      );
+      return filtered
+        .filter((e) => order.has(e.id))
+        .sort((a, b) => order.get(a.id)! - order.get(b.id)!);
+    }
+    return filtered;
+  }, [mode, query, muscleGroup, equipment, category, list, favorites, sessions]);
+  const favoriteSet = new Set(favorites);
 
   const renderItem = ({ item }: { item: Exercise }) => (
     <Pressable
@@ -83,6 +112,20 @@ export function ExerciseLibraryScreen({
           {EQUIPMENT_LABELS[item.equipment]}
         </Text>
       </View>
+      <Pressable
+        onPress={() => toggleFavorite(item.id)}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel={
+          favoriteSet.has(item.id) ? `Quitar ${item.name} de favoritos` : `Añadir ${item.name} a favoritos`
+        }
+      >
+        <Ionicons
+          name={favoriteSet.has(item.id) ? 'star' : 'star-outline'}
+          size={20}
+          color={favoriteSet.has(item.id) ? theme.accent : theme.textMuted}
+        />
+      </Pressable>
       {pick ? (
         <Pressable
           onPress={() => pick(item.id)}
@@ -120,6 +163,12 @@ export function ExerciseLibraryScreen({
             </Pressable>
           ) : null}
         </View>
+        <FilterChips
+          options={LIST_OPTIONS}
+          selected={list}
+          onChange={setList}
+          allLabel="Todo el catálogo"
+        />
         <FilterChips options={MUSCLE_OPTIONS} selected={muscleGroup} onChange={setMuscleGroup} />
         <FilterChips
           options={options.equipment}
@@ -151,7 +200,11 @@ export function ExerciseLibraryScreen({
         windowSize={7}
         ListEmptyComponent={
           <Text style={[styles.empty, { color: theme.textMuted }]}>
-            No hay ejercicios con esos filtros.
+            {list === 'favorites'
+              ? 'Aún no tienes favoritos. Toca la estrella de un ejercicio para guardarlo aquí.'
+              : list === 'recent'
+                ? 'Aquí aparecerán los ejercicios que vayas entrenando.'
+                : 'No hay ejercicios con esos filtros.'}
           </Text>
         }
       />
